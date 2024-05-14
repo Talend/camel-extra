@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    https://camel-extra.github.io
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+    02110-1301, USA.
+
+    http://www.gnu.org/licenses/gpl-2.0-standalone.html
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.apache-extras.camel-extra</groupId>
+    <artifactId>camel-parent</artifactId>
+    <version>${revision}</version>
+    <packaging>pom</packaging>
+    <name>Camel Extra</name>
+    <description>Camel Extra Parent POM</description>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/camel-extra/camel-extra/issues</url>
+    </issueManagement>
+
+    <mailingLists>
+        <mailingList>
+            <name>User List</name>
+            <archive>http://camel-extra.1091541.n5.nabble.com</archive>
+        </mailingList>
+    </mailingLists>
+
+    <prerequisites>
+        <maven>3.0.4</maven>
+    </prerequisites>
+
+    <properties>
+        <revision>${camel-extra.tesb.version}</revision>
+        <camel-extra.tesb.version>3.20.9.20240515</camel-extra.tesb.version>
+        <camel-version>3.20.9</camel-version>
+
+        <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
+        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
+
+        <maven-bundle-version>5.1.9</maven-bundle-version>
+        <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
+        <karaf4-version>4.4.3</karaf4-version>
+        <jcifs-version>2.1.37</jcifs-version>
+        <jdk.version>11</jdk.version>
+    </properties>
+
+    <url>https://camel-extra.github.io</url>
+
+    <organization>
+        <name>Apache Software Foundation</name>
+        <url>http://www.apache.org/</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>GNU GENERAL PUBLIC LICENSE</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0-standalone.html</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>org.apache.camel</groupId>
+				<artifactId>camel-bom</artifactId>
+				<version>${camel-version}</version>
+				<scope>import</scope>
+				<type>pom</type>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
+    <repositories>
+        <repository>
+            <id>apache.content.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>https://repository.apache.org/content/repositories/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>apache.snapshots</id>
+            <name>Apache Development Snapshot Repository</name>
+            <url>http://repository.apache.org/snapshots/</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <distributionManagement>
+        <snapshotRepository>
+            <id>sonatype-nexus-snapshots</id>
+            <name>Sonatype Nexus Snapshots</name>
+            <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
+        </snapshotRepository>
+        <repository>
+            <id>sonatype-nexus-staging</id>
+            <name>Nexus Release Repository</name>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+    </distributionManagement>
+
+    <scm>
+        <connection>scm:git:https://github.com/camel-extra/camel-extra.git</connection>
+        <developerConnection>scm:git:https://github.com/camel-extra/camel-extra.git</developerConnection>
+        <url>https://github.com/camel-extra/camel-extra</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <modules>
+        <module>components</module>
+        <module>platform</module>
+    </modules>
+
+    <build>
+        <defaultGoal>install</defaultGoal>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-checkstyle-plugin</artifactId>
+                    <executions>
+                        <execution>
+                            <id>validate</id>
+                            <phase>validate</phase>
+                            <configuration>
+                                <failsOnError>false</failsOnError>
+                            </configuration>
+                            <goals>
+                                <goal>checkstyle</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>cobertura-maven-plugin</artifactId>
+                    <version>${cobertura-maven-plugin-version}</version>
+                    <configuration>
+                        <aggregate>true</aggregate>
+                        <formats>
+                            <format>html</format>
+                        </formats>
+                        <check>
+                            <branchRate>85</branchRate>
+                            <lineRate>85</lineRate>
+                            <haltOnFailure>false</haltOnFailure>
+                            <totalBranchRate>85</totalBranchRate>
+                            <totalLineRate>85</totalLineRate>
+                            <packageLineRate>85</packageLineRate>
+                            <packageBranchRate>85</packageBranchRate>
+                            <regexes>
+                                <regex>
+                                    <pattern>org.apacheextras.camel.component.*</pattern>
+                                    <branchRate>90</branchRate>
+                                    <lineRate>80</lineRate>
+                                </regex>
+                                <regex>
+                                    <pattern>org.apacheextras.camel.examples.*</pattern>
+                                    <branchRate>10</branchRate>
+                                    <lineRate>5</lineRate>
+                                </regex>
+                            </regexes>
+                        </check>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.rat</groupId>
+                    <artifactId>apache-rat-plugin</artifactId>
+                    <version>0.8</version>
+                    <configuration>
+                        <licenses>
+                            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <licenseFamilyCategory>GPLv2</licenseFamilyCategory>
+                                <licenseFamilyName>camel-extra</licenseFamilyName>
+                                <patterns>
+                                    <pattern>http://www.gnu.org/licenses/gpl-2.0-standalone.html</pattern>
+                                </patterns>
+                            </license>
+                            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <licenseFamilyCategory>GPLv3</licenseFamilyCategory>
+                                <licenseFamilyName>camel-extra</licenseFamilyName>
+                                <patterns>
+                                    <pattern>http://www.gnu.org/licenses/gpl-3.0-standalone.html</pattern>
+                                </patterns>
+                            </license>
+                            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <licenseFamilyCategory>LGPLv2</licenseFamilyCategory>
+                                <licenseFamilyName>camel-extra</licenseFamilyName>
+                                <patterns>
+                                    <pattern>http://www.gnu.org/licenses/lgpl-2.0-standalone.html</pattern>
+                                </patterns>
+                            </license>
+                            <license implementation="org.apache.rat.analysis.license.SimplePatternBasedLicense">
+                                <licenseFamilyCategory>LGPLv3</licenseFamilyCategory>
+                                <licenseFamilyName>camel-extra</licenseFamilyName>
+                                <patterns>
+                                    <pattern>http://www.gnu.org/licenses/lgpl-3.0-standalone.html</pattern>
+                                </patterns>
+                            </license>
+                        </licenses>
+                        <licenseFamilies>
+                            <licenseFamily implementation="org.apache.rat.license.SimpleLicenseFamily">
+                                <familyName>camel-extra</familyName>
+                            </licenseFamily>
+                        </licenseFamilies>
+                        <excludes>
+                            <exclude>**/README</exclude>
+                            <exclude>**/README.txt</exclude>
+                            <exclude>**/README.md</exclude>
+                            <exclude>**/resources/**/*.xsd</exclude>
+                            <exclude>**/webapp/js/**/*</exclude>
+                            <exclude>**/test/resources/**/*</exclude>
+                            <exclude>**/test/data*/**/*</exclude>
+                            <exclude>.gitignore</exclude>
+                            <exclude>.git/**/*</exclude>
+                            <exclude>**/*.adoc</exclude>
+                            <exclude>**/*.md</exclude>
+                            <exclude>**/src/styles/print.css</exclude>
+                            <excludes>**/src/main/resources/META-INF/cxf/cxf.extension</excludes>
+                            <excludes>**/src/main/resources/META-INF/cxf/bus-extensions.txt</excludes>
+                            <exclude>**/target/**/*</exclude>
+                            <exclude>**/eclipse-classes/**/*</exclude>
+                            <exclude>**/.*</exclude>
+                            <exclude>**/.settings/**/*</exclude>
+                            <exclude>**/*.iml</exclude>
+                            <exclude>.idea/**/*</exclude>
+                            <exclude>**/avro/**/*.avpr</exclude>
+                            <exclude>**/OSGI-INF/bundle.info</exclude>
+                            <exclude>**/test_rsa*</exclude>
+                            <exclude>**/.gitignore</exclude>
+                            <exclude>**/*.csv</exclude>
+                            <exclude>atlassian-ide-plugin.xml</exclude>
+                        </excludes>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+</project>

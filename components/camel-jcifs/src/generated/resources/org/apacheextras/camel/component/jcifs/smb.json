@@ -11,7 +11,7 @@
     "supportLevel": "Stable",
     "groupId": "org.apache-extras.camel-extra",
     "artifactId": "camel-jcifs",
-    "version": "3.20.9-SNAPSHOT",
+    "version": "3.20.9.20240515",
     "scheme": "smb",
     "extendsScheme": "",
     "syntax": "smb:\/\/domain;username@host:port\/path?password=secret&localWorkDirectory=\/tmp",

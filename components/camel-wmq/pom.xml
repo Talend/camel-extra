@@ -16,16 +16,16 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.apache-extras.camel-extra</groupId>
+    <parent>
+        <groupId>org.apache-extras.camel-extra</groupId>
+        <artifactId>components</artifactId>
+        <version>${revision}</version>
+        <relativePath>..</relativePath>
+    </parent>
     <artifactId>camel-wmq</artifactId>
-    <version>3.20.9-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
     <name>Camel Extra :: IBM Websphere MQ</name>
     <description>Camel IBM Websphere MQ component</description>
-
-    <properties>
-        <camel-version>3.20.9</camel-version>
-    </properties>
 
     <url>https://camel-extra.github.io</url>
 
@@ -65,19 +65,11 @@
       <developerConnection>scm:git:https://github.com/camel-extra/camel-extra.git</developerConnection>
       <url>https://github.com/camel-extra/camel-extra</url>
     </scm>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-bom</artifactId>
-                <version>${camel-version}</version>
-                <scope>import</scope>
-                <type>pom</type>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
+    <properties>
+        <camel.osgi.import.before.defaults>
+            com.ibm*;resolution:=optional
+        </camel.osgi.import.before.defaults>
+    </properties>
     <dependencies>
 
         <!-- MQ -->
@@ -93,134 +85,4 @@
             <artifactId>camel-support</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-component-maven-plugin</artifactId>
-                <version>${camel-version}</version>
-                <executions>
-                    <execution>
-                        <id>generate</id>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                        <phase>process-classes</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <phase>initialize</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                            <goal>add-resource</goal>
-                        </goals>
-                        <configuration>
-                            <sources>
-                                <source>src/generated/java</source>
-                            </sources>
-                            <resources>
-                                <resource>
-                                    <directory>src/generated/resources</directory>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <version>5.1.2</version>
-                <extensions>true</extensions>
-                <inherited>true</inherited>
-                <configuration>
-                    <instructions>
-                        <Export-Package>
-                            org.apacheextras.camel.component.wmq
-                        </Export-Package>
-                        <Import-Package>
-                            org.apache.camel*;version="[3,4)",
-                            org.slf4j*;resolution:=optional,
-                            *
-                        </Import-Package>
-                        <Provide-Capability>
-                            osgi.service;effective:=active;objectClass="org.apache.camel.spi.ComponentResolver";component=wmq
-                        </Provide-Capability>
-                    </instructions>
-                </configuration>
-            </plugin>
-        </plugins>
-        <pluginManagement>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-release-plugin</artifactId>
-              <version>2.4.2</version>
-              <dependencies>
-                <dependency>
-                  <groupId>org.apache.maven.scm</groupId>
-                  <artifactId>maven-scm-provider-gitexe</artifactId>
-                  <version>1.9</version>
-                </dependency>
-              </dependencies>
-              <configuration>
-                <localCheckout>true</localCheckout>
-                <pushChanges>true</pushChanges>
-                <tagNameFormat>@{project.artifactId}-@{project.version}</tagNameFormat>
-                <useReleaseProfile>false</useReleaseProfile>
-                <preparationGoals>clean install</preparationGoals>
-                <goals>deploy</goals>
-                <!--  The profile we want to use when doing the release  -->
-                <arguments>-Prelease,apache-release,enable-schemagen,apt,sourcecheck,hibernate</arguments>
-                <autoVersionSubmodules>true</autoVersionSubmodules>
-              </configuration>
-            </plugin>
-          </plugins>
-        </pluginManagement>
-    </build>
-
-    <profiles>
-      <profile>
-        <id>release</id>
-        <build>
-          <plugins>
-            <plugin>
-              <groupId>org.apache.maven.plugins</groupId>
-              <artifactId>maven-gpg-plugin</artifactId>
-              <executions>
-                <execution>
-                  <id>sign</id>
-                  <phase>verify</phase>
-                  <goals>
-                    <goal>sign</goal>
-                  </goals>
-                  <configuration>
-                    <gpgArguments>
-                      <arg>--pinentry-mode</arg>
-                      <arg>loopback</arg>
-                    </gpgArguments>
-                  </configuration>
-                </execution>
-              </executions>
-            </plugin>
-          </plugins>
-        </build>
-      </profile>
-    </profiles>
-
 </project>

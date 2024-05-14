@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+    https://camel-extra.github.io
+
+    This program is free software; you can redistribute it and/or
+    modify it under the terms of the GNU General Public License
+    as published by the Free Software Foundation; either version 2
+    of the License, or (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+
+    You should have received a copy of the GNU General Public License
+    along with this program; if not, write to the Free Software
+    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+    02110-1301, USA.
+
+    http://www.gnu.org/licenses/gpl-2.0-standalone.html
+-->
+<features name='camel-extra-${project.version}'>
+
+    <repository>mvn:org.apache.camel.karaf/apache-camel/${camel-version}/xml/features</repository>
+
+    <feature name='camel-jcifs' version='${project.version}' resolver='(obr)' start-level='50'>
+        <feature prerequisite="true">wrap</feature>
+        <feature version='${camel-version}'>camel</feature>
+        <bundle dependency="true">wrap:mvn:org.codelibs/jcifs/${jcifs-version}</bundle>
+        <bundle>mvn:org.apache-extras.camel-extra/camel-jcifs/${project.version}</bundle>
+    </feature>
+    <feature name='camel-wmq' version='${project.version}' resolver='(obr)'>
+        <feature version='${camel-version}'>camel</feature>
+        <bundle>mvn:org.apache-extras.camel-extra/camel-wmq/${project.version}</bundle>
+    </feature>
+</features>

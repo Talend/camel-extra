@@ -22,28 +22,16 @@
 -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.apache-extras.camel-extra</groupId>
+	<parent>
+		<groupId>org.apache-extras.camel-extra</groupId>
+		<artifactId>components</artifactId>
+		<version>${revision}</version>
+		<relativePath>..</relativePath>
+	</parent>
 	<artifactId>camel-jcifs</artifactId>
-	<version>3.20.9-SNAPSHOT</version>
 	<packaging>jar</packaging>
 	<name>Camel Extra :: JCIFS</name>
 	<description>Camel JCIFS (SMB) component</description>
-	<properties>
-		<camel-version>3.20.9</camel-version>
-		<camel.osgi.export.pkg>org.apacheextras.camel.component.jcifs</camel.osgi.export.pkg>
-		<camel.osgi.export.service>org.apache.camel.spi.ComponentResolver;component=smb</camel.osgi.export.service>
-	</properties>
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>org.apache.camel</groupId>
-				<artifactId>camel-bom</artifactId>
-				<version>${camel-version}</version>
-				<scope>import</scope>
-				<type>pom</type>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.camel</groupId>
@@ -60,7 +48,7 @@
 		<dependency>
 			<groupId>org.codelibs</groupId>
 			<artifactId>jcifs</artifactId>
-			<version>2.1.37</version>
+			<version>${jcifs-version}</version>
 		</dependency>
 		<!-- testing -->
 		<dependency>
@@ -81,77 +69,4 @@
 		    <scope>test</scope>
 		</dependency>
 	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<executions>
-					<execution>
-						<id>recompile</id>
-						<goals>
-							<goal>compile</goal>
-						</goals>
-						<phase>process-classes</phase>
-					</execution>
-				</executions>
-				<configuration>
-					<source>11</source>
-					<target>11</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.camel</groupId>
-				<artifactId>camel-package-maven-plugin</artifactId>
-				<version>${camel-version}</version>
-				<executions>
-					<execution>
-						<id>generate</id>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<phase>process-classes</phase>
-					</execution>
-					<execution>
-						<id>generate-postcompile</id>
-						<goals>
-							<goal>generate-postcompile</goal>
-						</goals>
-						<phase>prepare-package</phase>
-					</execution>
-				</executions>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.camel</groupId>
-						<artifactId>camel-core-model</artifactId>
-						<version>${camel-version}</version>
-						<scope>compile</scope>
-					</dependency>
-				</dependencies>
-			</plugin>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<executions>
-					<execution>
-						<phase>initialize</phase>
-						<goals>
-							<goal>add-source</goal>
-							<goal>add-resource</goal>
-						</goals>
-						<configuration>
-							<sources>
-								<source>src/generated/java</source>
-							</sources>
-							<resources>
-								<resource>
-									<directory>src/generated/resources</directory>
-								</resource>
-							</resources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-		</plugins>
-	</build>
 </project>
