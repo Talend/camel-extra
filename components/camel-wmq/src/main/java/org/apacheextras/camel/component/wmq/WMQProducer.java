@@ -28,7 +28,7 @@ import com.ibm.mq.constants.MQConstants;
 
 public class WMQProducer extends DefaultProducer {
 
-    private final static Logger LOGGER = LoggerFactory.getLogger(WMQProducer.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WMQProducer.class);
 
     private final WMQEndpoint endpoint;
 
@@ -44,6 +44,7 @@ public class WMQProducer extends DefaultProducer {
         return (WMQEndpoint) super.getEndpoint();
     }
 
+    @Override
     public void process(Exchange exchange) throws Exception {
         WMQComponent component = (WMQComponent) this.getEndpoint().getComponent();
 
@@ -81,10 +82,10 @@ public class WMQProducer extends DefaultProducer {
                     destination = mqQueueManager.accessQueue(destinationName, MQOO, null, null, null);
                 }
 
-                LOGGER.info("Creating MQMessage");
+                LOGGER.debug("Creating MQMessage");
                 MQMessage message = new MQMessage();
 
-                LOGGER.info("Populating MQMD headers");
+                LOGGER.debug("Populating MQMD headers");
                 if (in.getHeader("mq.mqmd.format") != null)
                     message.format = (String) in.getHeader("mq.mqmd.format");
                 if (in.getHeader("mq.mqmd.charset") != null)
@@ -141,28 +142,28 @@ public class WMQProducer extends DefaultProducer {
                 boolean rfh2 = false;
                 if (in.getHeaders()
                       .containsKey("mq.rfh2.format")) {
-                    LOGGER.info("mq.rfh2.format");
+                    LOGGER.trace("mq.rfh2.format");
                     message.format = MQConstants.MQFMT_RF_HEADER_2;
                     rfh2 = true;
                 }
                 if (in.getHeader("mq.rfh2.struct.id") != null && rfh2) {
-                    LOGGER.info("mq.rfh2.struct.id defined: {}", in.getHeader("mq.rfh2.struct.id"));
+                    LOGGER.trace("mq.rfh2.struct.id defined: {}", in.getHeader("mq.rfh2.struct.id"));
                     message.writeString((String) in.getHeader("mq.rfh2.struct.id"));
                 } else if (rfh2) {
-                    LOGGER.info("mq.rfh2.struct.id not defined, fallback: {}", MQConstants.MQRFH_STRUC_ID);
+                    LOGGER.trace("mq.rfh2.struct.id not defined, fallback: {}", MQConstants.MQRFH_STRUC_ID);
                     message.writeString(MQConstants.MQRFH_STRUC_ID);
                 }
                 if (in.getHeader("mq.rfh2.version") != null && rfh2) {
-                    LOGGER.info("mq.rfh2.version defined: {}", in.getHeader("mq.rfh2.version"));
+                    LOGGER.trace("mq.rfh2.version defined: {}", in.getHeader("mq.rfh2.version"));
                     message.writeInt4((Integer) in.getHeader("mq.rfh2.version"));
                 } else if (rfh2) {
-                    LOGGER.info("mq.rfh2.version not defined, fallback: {}", MQConstants.MQRFH_VERSION_2);
+                    LOGGER.trace("mq.rfh2.version not defined, fallback: {}", MQConstants.MQRFH_VERSION_2);
                     message.writeInt4(MQConstants.MQRFH_VERSION_2);
                 }
 
                 // TODO iterator on the headers and folders
                 // v2 folders: mcd, jms, usr, PubSub, pscr, other
-                LOGGER.info("Dealing with RFH2 folders");
+                LOGGER.trace("Dealing with RFH2 folders");
                 String mcd = (String) in.getHeader("mq.rfh2.folder.mcd");
                 String jms = (String) in.getHeader("mq.rfh2.folder.jms");
                 String usr = (String) in.getHeader("mq.rfh2.folder.usr");

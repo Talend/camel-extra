@@ -63,12 +63,12 @@ public class WMQEndpoint extends DefaultEndpoint {
     private String bodyType;
 
     @UriParam
-    @Metadata(description = "Polling delay (iteration)")
+    @Metadata(description = "Polling delay (iteration)", defaultValue = "5")
     private int delay = 5;
 
     @UriParam
-    @Metadata(description = "Timeout/delay when exception occur")
-    private int delayOnException = 60*1000;
+    @Metadata(description = "Timeout/delay when exception occur", defaultValue = "60000")
+    private int delayOnException = 60_000;
 
     public WMQEndpoint() {}
 
@@ -165,10 +165,12 @@ public class WMQEndpoint extends DefaultEndpoint {
         this.delayOnException = delayOnException;
     }
 
-    public Producer createProducer() throws Exception {
+    @Override
+    public Producer createProducer() {
         return new WMQProducer(this);
     }
 
+    @Override
     public WMQConsumer createConsumer(Processor processor) throws Exception {
         WMQConsumer consumer = new WMQConsumer(this, processor);
         consumer.setDelay(delay);
@@ -176,6 +178,7 @@ public class WMQEndpoint extends DefaultEndpoint {
         return consumer;
     }
 
+    @Override
     @ManagedAttribute
     public boolean isSingleton() {
         return true;
