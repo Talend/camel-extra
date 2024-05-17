@@ -53,8 +53,6 @@
         <camel-version>3.20.9</camel-version>
 
         <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
-        <sonatypeOssDistMgmtSnapshotsUrl>https://oss.sonatype.org/content/repositories/snapshots/</sonatypeOssDistMgmtSnapshotsUrl>
-
         <maven-bundle-version>5.1.9</maven-bundle-version>
         <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
         <karaf4-version>4.4.3</karaf4-version>
@@ -112,19 +110,6 @@
             </releases>
         </pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-        <snapshotRepository>
-            <id>sonatype-nexus-snapshots</id>
-            <name>Sonatype Nexus Snapshots</name>
-            <url>${sonatypeOssDistMgmtSnapshotsUrl}</url>
-        </snapshotRepository>
-        <repository>
-            <id>sonatype-nexus-staging</id>
-            <name>Nexus Release Repository</name>
-            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-        </repository>
-    </distributionManagement>
 
     <scm>
         <connection>scm:git:https://github.com/camel-extra/camel-extra.git</connection>
