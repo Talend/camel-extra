@@ -21,11 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
@@ -85,47 +81,49 @@ public class FromSmbRecursiveTest extends BaseSmbTestSupport {
         expect(sub1Dir.listFiles()).andReturn(new SmbFile[] {source1File}).anyTimes();
         expect(sub1Dir.isDirectory()).andReturn(true).anyTimes();
         expect(sub1Dir.getName()).andReturn("sub1").anyTimes();
+        sub1Dir.close();
+        expectLastCall().atLeastOnce();
 
         expect(source1File.isDirectory()).andReturn(false).anyTimes();
         expect(source1File.getName()).andReturn("hello.txt").anyTimes();
         expect(source1File.getContentLength()).andReturn(26).anyTimes();
         expect(source1File.getLastModified()).andReturn(startTime).anyTimes();
         expect(source1File.getInputStream()).andReturn(mockInputStream1).anyTimes();
+        source1File.close();
+        expectLastCall().atLeastOnce();
 
         expect(sub2Dir.listFiles()).andReturn(new SmbFile[] {source1File}).anyTimes();
         expect(sub2Dir.isDirectory()).andReturn(true).anyTimes();
         expect(sub2Dir.getName()).andReturn("sub2").anyTimes();
+        sub2Dir.close();
+        expectLastCall().atLeastOnce();
 
         expect(source2File.isDirectory()).andReturn(false).anyTimes();
         expect(source2File.getName()).andReturn("hello.txt").anyTimes();
         expect(source2File.getContentLength()).andReturn(26).anyTimes();
         expect(source2File.getLastModified()).andReturn(startTime).anyTimes();
         expect(source2File.getInputStream()).andReturn(mockInputStream2).anyTimes();
+        source2File.close();
+        expectLastCall().atLeastOnce();
 
         expect(mockInputStream1.available()).andReturn(26);
-        expect(mockInputStream1.read((byte[])anyObject())).andAnswer(new IAnswer<Integer>() {
-            @Override
-            public Integer answer() throws Throwable {
-                byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
-                byte[] msg = "Hello World from SMBServer sub1".getBytes();
-                System.arraycopy(msg, 0, b, 0, msg.length);
-                return msg.length;
-            }
+        expect(mockInputStream1.read(anyObject())).andAnswer(() -> {
+            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+            byte[] msg = "Hello World from SMBServer sub1".getBytes();
+            System.arraycopy(msg, 0, b, 0, msg.length);
+            return msg.length;
         });
-        expect(mockInputStream1.read((byte[])anyObject())).andReturn(-1);
+        expect(mockInputStream1.read(anyObject())).andReturn(-1);
         mockInputStream1.close();
 
         expect(mockInputStream2.available()).andReturn(26);
-        expect(mockInputStream2.read((byte[])anyObject())).andAnswer(new IAnswer<Integer>() {
-            @Override
-            public Integer answer() throws Throwable {
-                byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
-                byte[] msg = "Hello World from SMBServer sub2".getBytes();
-                System.arraycopy(msg, 0, b, 0, msg.length);
-                return msg.length;
-            }
+        expect(mockInputStream2.read(anyObject())).andAnswer(() -> {
+            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+            byte[] msg = "Hello World from SMBServer sub2".getBytes();
+            System.arraycopy(msg, 0, b, 0, msg.length);
+            return msg.length;
         });
-        expect(mockInputStream2.read((byte[])anyObject())).andReturn(-1);
+        expect(mockInputStream2.read(anyObject())).andReturn(-1);
         mockInputStream2.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/", rootDir);
@@ -152,7 +150,7 @@ public class FromSmbRecursiveTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from(getSmbUrl()).to("mock:result");
             }
         };

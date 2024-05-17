@@ -162,22 +162,20 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
             file.setBody(local);
             login();
             result = client.retrieveFile(getPath(name), os);
-        } catch (IOException e) {
-            throw new GenericFileOperationFailedException("Cannot retrieve file: " + name, e);
         } catch (Exception e) {
-            throw new GenericFileOperationFailedException("Cannot retrieve file: " + name, e);
-        } finally {
+            throw new GenericFileOperationFailedException(String.format("Cannot retrieve file: %s", name), e);
+        }  finally {
             IOHelper.close(os, "retrieve: " + name);
         }
 
         try {
             if (!FileUtil.renameFile(temp, local, true)) {
                 throw new GenericFileOperationFailedException(
-                        "Cannot rename local work file from: " + temp + " to: " + local);
+                        String.format("Cannot rename local work file from: %s to: %s", temp, local));
             }
         } catch (IOException e) {
             throw new GenericFileOperationFailedException(
-                    "Cannot rename local work file from: " + temp + " to: " + local, e);
+                    String.format("Cannot rename local work file from: %s to: %s", temp, local), e);
         }
 
         return result;
@@ -185,10 +183,8 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
 
     @SuppressWarnings("unchecked")
     private boolean retrieveFileToStreamInBody(final String name, final Exchange exchange) {
-        OutputStream os = null;
         boolean result;
-        try {
-            os = new ByteArrayOutputStream();
+        try (OutputStream os = new ByteArrayOutputStream()) {
             GenericFile<SmbFile> target = (GenericFile<SmbFile>) exchange
                     .getProperty(FileComponent.FILE_EXCHANGE_FILE);
             ObjectHelper.notNull(target,
@@ -199,12 +195,8 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
             login();
             result = client.retrieveFile(getPath(name), os);
 
-        } catch (IOException e) {
-            throw new GenericFileOperationFailedException("Cannot retrieve file: " + name, e);
         } catch (Exception e) {
-            throw new GenericFileOperationFailedException("Cannot retrieve file: " + name, e);
-        } finally {
-            IOHelper.close(os, "retrieve: " + name);
+            throw new GenericFileOperationFailedException(String.format("Cannot retrieve file: %s", name), e);
         }
 
         return result;
@@ -269,14 +261,11 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
         if (existsFile(name)) {
             if (endpoint.getFileExist() == GenericFileExist.Ignore) {
                 // ignore but indicate that the file was written
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug(
-                            "An existing file already exists: " + name + ". Ignore and do not override it.");
-                }
+                LOGGER.debug("An existing file already exists: {}. Ignore and do not override it.", name);
                 return true;
             } else if (endpoint.getFileExist() == GenericFileExist.Fail) {
                 throw new GenericFileOperationFailedException(
-                        "File already exist: " + name + ". Cannot write new file.");
+                        String.format("File already exist: %s. Cannot write new file.", name));
             } else if (endpoint.getFileExist() == GenericFileExist.Move) {
                 // move any existing file first
                 doMoveExistingFile(name);
@@ -285,11 +274,9 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
                 // we override the target so we do this by deleting it so the
                 // temp file can be renamed later
                 // with success as the existing target file have been deleted
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Eagerly deleting existing file: " + name);
-                }
+                LOGGER.debug("Eagerly deleting existing file: {}", name);
                 if (!deleteFile(name)) {
-                    throw new GenericFileOperationFailedException("Cannot delete file: " + name);
+                    throw new GenericFileOperationFailedException(String.format("Cannot delete file: %s", name));
                 }
             } else if (endpoint.getFileExist() == GenericFileExist.Append) {
                 append = true;
@@ -297,22 +284,16 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
         }
 
         String storeName = getPath(name);
-
-        InputStream is = null;
-        try {
-
-            is = exchange.getMessage(InputStream.class);
-            if(is == null){
-                is = exchange.getIn().getBody(InputStream.class);
-            }
-
+        InputStream input = exchange.getMessage(InputStream.class);
+        if (input == null){
+            input = exchange.getIn().getBody(InputStream.class);
+        }
+        try (InputStream is = input) {
             login();
             client.storeFile(storeName, is, append, lastModifiedDate(exchange));
             return true;
         } catch (Exception e) {
-            throw new GenericFileOperationFailedException("Cannot store file " + storeName, e);
-        } finally {
-            IOHelper.close(is, "store: " + storeName);
+            throw new GenericFileOperationFailedException(String.format("Cannot store file %s", storeName), e);
         }
     }
 

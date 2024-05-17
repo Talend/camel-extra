@@ -43,7 +43,7 @@ public abstract class BaseSmbTestSupport extends CamelTestSupport {
     @Override
     protected CamelContext createCamelContext() throws Exception {
         CamelContext aContext = super.createCamelContext();
-        SmbComponent component = (SmbComponent)aContext.getComponent("smb");
+        SmbComponent component = aContext.getComponent("smb", SmbComponent.class);
         component.setSmbApiFactoryClass(smbApiFactory);
         return aContext;
     }
@@ -62,9 +62,5 @@ public abstract class BaseSmbTestSupport extends CamelTestSupport {
 
     public String getShare() {
         return "share";
-    }
-
-    public String getLocalSharePath() {
-        return "src/test/data";
     }
 }

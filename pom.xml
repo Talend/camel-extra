@@ -59,6 +59,7 @@
         <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
         <karaf4-version>4.4.3</karaf4-version>
         <jcifs-version>2.1.37</jcifs-version>
+        <bouncycastle-version>1.76</bouncycastle-version>
         <jdk.version>11</jdk.version>
     </properties>
 

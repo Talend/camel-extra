@@ -58,7 +58,7 @@ public class SmbChangedExclusiveReadLockStrategy implements GenericFileExclusive
     public boolean acquireExclusiveReadLock(final GenericFileOperations<SmbFile> operations, final GenericFile<SmbFile> file, final Exchange exchange) throws Exception {
         boolean exclusive = false;
 
-        LOG.trace("Waiting for exclusive read lock to file: " + file);
+        LOG.trace("Waiting for exclusive read lock to file: {}", file);
 
         long lastModified = Long.MIN_VALUE;
         long length = Long.MIN_VALUE;
@@ -86,15 +86,17 @@ public class SmbChangedExclusiveReadLockStrategy implements GenericFileExclusive
 
             LOG.trace("List files {} found {} files", file.getAbsoluteFilePath(), files.size());
             for (SmbFile f : files) {
-                // use same attribute sources as org.apacheextras.camel.component.jcifs.SmbConsumer#asGenericFile()
-                if (f.getName().equals(file.getFileNameOnly())) {
-                    newLastModified = f.getLastModified();
-                    newLength = f.getContentLength();
+                try (f) {
+                    // use same attribute sources as org.apacheextras.camel.component.jcifs.SmbConsumer#asGenericFile()
+                    if (f.getName().equals(file.getFileNameOnly())) {
+                        newLastModified = f.getLastModified();
+                        newLength = f.getContentLength();
+                    }
                 }
             }
 
-            LOG.trace("Previous last modified: " + lastModified + ", new last modified: " + newLastModified);
-            LOG.trace("Previous length: " + length + ", new length: " + newLength);
+            LOG.trace("Previous last modified: {}}, new last modified: {}", lastModified, newLastModified);
+            LOG.trace("Previous length: {}, new length: {}", length, newLength);
             long newOlderThan = startTime + watch.taken() - minAge;
             LOG.trace("New older than threshold: {}", newOlderThan);
 
@@ -118,11 +120,12 @@ public class SmbChangedExclusiveReadLockStrategy implements GenericFileExclusive
     }
 
     private boolean sleep() {
-        LOG.trace("Exclusive read lock not granted. Sleeping for " + checkInterval + " millis.");
+        LOG.trace("Exclusive read lock not granted. Sleeping for {} millis.", checkInterval);
         try {
             Thread.sleep(checkInterval);
             return false;
         } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
             LOG.debug("Sleep interrupted while waiting for exclusive read lock, so breaking out");
             return true;
         }

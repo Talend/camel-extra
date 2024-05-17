@@ -43,7 +43,7 @@ import jcifs.smb.SmbFile;
 public class SmbConsumer extends GenericFileConsumer<SmbFile> {
     private static final Logger LOGGER = LoggerFactory.getLogger(SmbConsumer.class);
 
-    private String endpointPath;
+    private final String endpointPath;
     private String currentRelativePath = "";
 
     public SmbConsumer(final GenericFileEndpoint<SmbFile> endpoint, final Processor processor, final GenericFileOperations<SmbFile> operations, final GenericFileProcessStrategy<SmbFile> strategy) {
@@ -55,42 +55,40 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
     protected boolean pollDirectory(final String fileName, final List<GenericFile<SmbFile>> fileList, int depth) {
 
         if (LOGGER.isTraceEnabled()) {
-            LOGGER.trace("pollDirectory() running. My delay is [" + this.getDelay() + "] and my strategy is [" + this.getPollStrategy().getClass().toString() + "]");
-            LOGGER.trace("pollDirectory() fileName[" + fileName + "]");
+            LOGGER.trace("pollDirectory() running. My delay is [{}] and my strategy is [{}]", this.getDelay(), this.getPollStrategy().getClass());
+            LOGGER.trace("pollDirectory() fileName[{}]", fileName);
         }
 
 
-        boolean currentFileIsDir = false;
+        boolean currentFileIsDir;
         SmbFile[] smbFiles = operations.listFiles(fileName);
         for (SmbFile smbFile : smbFiles) {
-            if (!canPollMoreFiles(fileList)) {
-                return false;
-            }
-            try {
-                if (smbFile.isDirectory()) {
-                    currentFileIsDir = true;
-                } else {
-                    currentFileIsDir = false;
+            try (smbFile) {
+                if (!canPollMoreFiles(fileList)) {
+                    return false;
                 }
-            } catch (SmbException e1) {
-                throw RuntimeCamelException.wrapRuntimeCamelException(e1);
-            }
-            if (currentFileIsDir) {
-                if (endpoint.isRecursive()) {
-                    currentRelativePath = smbFile.getName().split("/")[0] + "/";
-                    int nextDepth = depth++;
-                    pollDirectory(fileName + "/" + smbFile.getName(), fileList, nextDepth);
-                } else {
-                    currentRelativePath = "";
-                }
-            } else {
                 try {
-                    GenericFile<SmbFile> genericFile = asGenericFile(fileName, smbFile);
-                    if (isValidFile(genericFile, false, smbFiles)) {
-                        fileList.add(asGenericFile(fileName, smbFile));
+                    currentFileIsDir = smbFile.isDirectory();
+                } catch (SmbException e1) {
+                    throw RuntimeCamelException.wrapRuntimeCamelException(e1);
+                }
+                if (currentFileIsDir) {
+                    if (endpoint.isRecursive()) {
+                        currentRelativePath = smbFile.getName().split("/")[0] + "/";
+                        int nextDepth = depth++;
+                        pollDirectory(fileName + "/" + smbFile.getName(), fileList, nextDepth);
+                    } else {
+                        currentRelativePath = "";
                     }
-                } catch (IOException e) {
-                    throw RuntimeCamelException.wrapRuntimeCamelException(e);
+                } else {
+                    try {
+                        GenericFile<SmbFile> genericFile = asGenericFile(fileName, smbFile);
+                        if (isValidFile(genericFile, false, smbFiles)) {
+                            fileList.add(asGenericFile(fileName, smbFile));
+                        }
+                    } catch (IOException e) {
+                        throw RuntimeCamelException.wrapRuntimeCamelException(e);
+                    }
                 }
             }
         }
@@ -117,8 +115,8 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("asGenericFile():");
-            LOGGER.trace("absoluteFilePath[" + answer.getAbsoluteFilePath() + "] endpointpath[" + answer.getEndpointPath() + "] filenameonly[" + answer.getFileNameOnly()
-                      + "] filename[" + answer.getFileName() + "] relativepath[" + answer.getRelativeFilePath() + "]");
+            LOGGER.trace("absoluteFilePath[{}] endpointpath[{}] filenameonly[{}] filename[{}] relativepath[{}]",
+                    answer.getAbsoluteFilePath(), answer.getEndpointPath(), answer.getFileNameOnly(), answer.getFileName(), answer.getRelativeFilePath());
         }
         return answer;
     }

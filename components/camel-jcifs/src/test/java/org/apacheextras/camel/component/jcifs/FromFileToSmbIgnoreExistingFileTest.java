@@ -21,13 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -61,20 +55,27 @@ public class FromFileToSmbIgnoreExistingFileTest extends BaseSmbTestSupport {
     @Override
     @Before
     public void setUpFileSystem() throws Exception {
-        logoOne = createStrictMock(SmbFile.class);
-        logoTwo = createStrictMock(SmbFile.class);
-        rootDir = createStrictMock(SmbFile.class);
+        logoOne = createMock(SmbFile.class);
+        logoTwo = createMock(SmbFile.class);
+        rootDir = createMock(SmbFile.class);
         mockOutputStream = createMock(SmbFileOutputStream.class);
 
         expect(rootDir.exists()).andReturn(true).times(2);
+        rootDir.close();
+        expectLastCall().atLeastOnce();
 
         //Logo one already exists so we expect that one NOT to be written!
         expect(logoOne.exists()).andReturn(true).times(1);
+        logoOne.close();
+        expectLastCall().atLeastOnce();
 
         //Log two doesn't exist so we expect the file to be written as usual
         expect(logoTwo.exists()).andReturn(false).times(1);
         expect(logoTwo.getName()).andReturn("logo2.png").times(1);
-        mockOutputStream.write((byte[])anyObject(), eq(0), eq(15358));
+        logoTwo.close();
+        expectLastCall().atLeastOnce();
+
+        mockOutputStream.write(anyObject(), eq(0), eq(15358));
         mockOutputStream.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl(), rootDir);
@@ -101,7 +102,7 @@ public class FromFileToSmbIgnoreExistingFileTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("file:src/test/data?noop=true&delay=3000").to(getSmbUrl()).to("mock:result");
             }
         };

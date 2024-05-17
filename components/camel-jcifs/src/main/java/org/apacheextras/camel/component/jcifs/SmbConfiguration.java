@@ -77,17 +77,6 @@ public class SmbConfiguration extends GenericFileConfiguration {
         setPath(uri.getPath());
     }
 
-    public String getSmbPath() {
-        StringBuilder buffer = new StringBuilder();
-        buffer.append("smb://");
-        buffer.append(getHost());
-        if (getPort() > 0) {
-            buffer.append(":").append(getPort());
-        }
-        buffer.append(getPath());
-        return buffer.toString();
-    }
-
     public String getSmbHostPath() {
         StringBuilder buffer = new StringBuilder();
         buffer.append("smb://");

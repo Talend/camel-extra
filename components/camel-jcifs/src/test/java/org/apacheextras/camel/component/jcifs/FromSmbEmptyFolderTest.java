@@ -43,16 +43,13 @@ import jcifs.smb.SmbFilenameFilter;
  */
 public class FromSmbEmptyFolderTest extends BaseSmbTestSupport {
 
-    private SmbFile rootDir;
-
     @EndpointInject("mock:result")
     private MockEndpoint mockResult;
 
     @Override
     protected void setUpFileSystem() throws Exception {
-        rootDir = new FakeSmbFile(getSmbBaseUrl() + "/");
+        SmbFile rootDir = new FakeSmbFile(getSmbBaseUrl() + "/");
 
-        // expect(rootDir.listFiles());
         smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/", rootDir);
     }
 
@@ -93,17 +90,17 @@ public class FromSmbEmptyFolderTest extends BaseSmbTestSupport {
         }
 
         @Override
-        public SmbFile[] listFiles(SmbFileFilter filter) throws SmbException {
+        public SmbFile[] listFiles(SmbFileFilter filter) {
             return null;
         }
 
         @Override
-        public SmbFile[] listFiles(String wildcard) throws SmbException {
+        public SmbFile[] listFiles(String wildcard) {
             return null;
         }
 
         @Override
-        public SmbFile[] listFiles(SmbFilenameFilter filter) throws SmbException {
+        public SmbFile[] listFiles(SmbFilenameFilter filter) {
             return null;
         }
 

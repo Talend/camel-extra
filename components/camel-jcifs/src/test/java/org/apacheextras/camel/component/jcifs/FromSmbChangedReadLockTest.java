@@ -21,11 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
@@ -84,18 +80,16 @@ public class FromSmbChangedReadLockTest extends BaseSmbTestSupport {
         }
         expect(sourceFile.getLastModified()).andReturn(startTime).anyTimes();
         expect(sourceFile.getInputStream()).andReturn(mockInputStream).anyTimes();
-
+        sourceFile.close();
+        expectLastCall().atLeastOnce();
 
         expect(mockInputStream.available()).andReturn(FILE_CONTENT.length);
-        expect(mockInputStream.read((byte[]) anyObject())).andAnswer(new IAnswer<Integer>() {
-            @Override
-            public Integer answer() throws Throwable {
-                byte[] b = (byte[]) EasyMock.getCurrentArguments()[0];
-                System.arraycopy(FILE_CONTENT, 0, b, 0, FILE_CONTENT.length);
-                return FILE_CONTENT.length;
-            }
+        expect(mockInputStream.read(anyObject())).andAnswer(() -> {
+            byte[] b = (byte[]) EasyMock.getCurrentArguments()[0];
+            System.arraycopy(FILE_CONTENT, 0, b, 0, FILE_CONTENT.length);
+            return FILE_CONTENT.length;
         });
-        expect(mockInputStream.read((byte[]) anyObject())).andReturn(-1);
+        expect(mockInputStream.read(anyObject())).andReturn(-1);
         mockInputStream.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/", rootDir);
@@ -121,7 +115,7 @@ public class FromSmbChangedReadLockTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from(getSmbUrl()).to("mock:result");
             }
         };

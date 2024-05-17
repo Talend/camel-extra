@@ -50,7 +50,6 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
 
     protected SmbProducer(final GenericFileEndpoint<SmbFile> endpoint, final GenericFileOperations<SmbFile> operations) {
         super(endpoint, operations);
-
     }
 
     @Override
@@ -61,8 +60,8 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
     @Override
     public String normalizePath(final String name) {
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("normalizePath() name[" + name + "]");
-            LOGGER.debug("normalizePath() returning [" + name.replace('\\', '/') + "]");
+            LOGGER.debug("normalizePath() name[{}]", name);
+            LOGGER.debug("normalizePath() returning [{}]", name.replace('\\', '/'));
         }
         return name.replace('\\', '/');
     }
@@ -89,15 +88,11 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
     }
 
     protected void processExchange(final Exchange exchange) throws Exception {
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.trace("Processing " + exchange);
-        }
+        LOGGER.trace("Processing {}", exchange);
 
         try {
             String target = createFileName(exchange);
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("processExchange() target[" + target + "]");
-            }
+            LOGGER.debug("processExchange() target[{}]", target);
 
             preWriteCheck(exchange);
 
@@ -108,17 +103,13 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
             if (writeAsTempAndRename) {
                 // compute temporary name with the temp prefix
                 tempTarget = createTempFileName(exchange, target);
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Writing using tempNameFile: " + tempTarget);
-                }
+                LOGGER.debug("Writing using tempNameFile: {}", tempTarget);
 
                 // delete any pre existing temp file
                 if (operations.existsFile(tempTarget)) {
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Deleting existing temp file: " + tempTarget);
-                    }
+                    LOGGER.debug("Deleting existing temp file: {}", tempTarget);
                     if (!operations.deleteFile(tempTarget)) {
-                        throw new GenericFileOperationFailedException("Cannot delete file: " + tempTarget);
+                        throw new GenericFileOperationFailedException(String.format("Cannot delete file: %s", tempTarget));
                     }
                 }
             }
@@ -137,21 +128,18 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
                     // the temp file can be renamed later
                     // with success as the existing target file have been
                     // deleted
-                    if (LOGGER.isDebugEnabled()) {
-                        LOGGER.debug("Deleting existing file: " + target);
-                    }
+                    LOGGER.debug("Deleting existing file: {}", target);
                     if (!operations.deleteFile(target)) {
-                        throw new GenericFileOperationFailedException("Cannot delete file: " + target);
+                        throw new GenericFileOperationFailedException(String.format("Cannot delete file: %s", target));
                     }
                 }
 
                 // now we are ready to rename the temp file to the target file
-                if (LOGGER.isDebugEnabled()) {
-                    LOGGER.debug("Renaming file: [" + tempTarget + "] to: [" + target + "]");
-                }
+                LOGGER.debug("Renaming file: [{}] to: [{}]", tempTarget, target);
                 boolean renamed = operations.renameFile(tempTarget, target);
                 if (!renamed) {
-                    throw new GenericFileOperationFailedException("Cannot rename file from: " + tempTarget + " to: " + target);
+                    throw new GenericFileOperationFailedException(
+                            String.format("Cannot rename file from: %s to: %s", tempTarget, target));
                 }
             }
 
@@ -168,7 +156,8 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
                 LOGGER.trace("Writing done file: [{}]", doneFileName);
                 // delete any existing done file
                 if (operations.existsFile(doneFileName) && !operations.deleteFile(doneFileName)) {
-                    throw new GenericFileOperationFailedException("Cannot delete existing done file: " + doneFileName);
+                    throw new GenericFileOperationFailedException(
+                            String.format("Cannot delete existing done file: %s", doneFileName));
                 }
                 writeFile(empty, doneFileName);
             }
@@ -191,19 +180,15 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
 
         // expression support
         Expression expression = endpoint.getFileName();
-        if (name != null && StringHelper.hasStartToken(name, "simple")) {
+        if (StringHelper.hasStartToken(name, "simple")) {
             // the header name can be an expression too, that should override
             // whatever configured on the endpoint
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug(Exchange.FILE_NAME + " contains a Simple expression: " + name);
-            }
+            LOGGER.debug("{} contains a Simple expression: {}", Exchange.FILE_NAME, name);
             Language language = getEndpoint().getCamelContext().resolveLanguage("file");
             expression = language.createExpression(name);
         }
         if (expression != null) {
-            if (LOGGER.isDebugEnabled()) {
-                LOGGER.debug("Filename evaluated as expression: " + expression);
-            }
+            LOGGER.debug("Filename evaluated as expression: {}", expression);
             name = expression.evaluate(exchange, String.class);
         }
 
@@ -217,19 +202,15 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
                 name = name.substring(pos + 1);
             }
         }
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("createFilename() name[" + name + "]");
-        }
+        LOGGER.debug("createFilename() name[{}]", name);
         // compute path by adding endpoint starting directory
         String aEndpointPath = endpoint.getConfiguration().getDirectory();
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("createFileName() enpointPath [" + aEndpointPath + "]");
-        }
+        LOGGER.debug("createFileName() enpointPath [{}]", aEndpointPath);
         // Its a directory so we should use it as a base path for the filename
         // If the path isn't empty, we need to add a trailing / if it isn't
         // already there
         String baseDir = "";
-        if (aEndpointPath.length() > 0) {
+        if (!aEndpointPath.isEmpty()) {
             baseDir = aEndpointPath + (aEndpointPath.endsWith(getFileSeparator()) ? "" : getFileSeparator());
         }
         if (name != null) {
@@ -250,9 +231,7 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
     @Override
     public void writeFile(final Exchange exchange, final String fileName) throws GenericFileOperationFailedException {
 
-        if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("writeFile() fileName[" + fileName + "]");
-        }
+        LOGGER.debug("writeFile() fileName[{}]", fileName);
         // build directory if auto create is enabled
         if (endpoint.isAutoCreate()) {
             // we must normalize it (to avoid having both \ and / in the name
@@ -264,27 +243,27 @@ public class SmbProducer extends GenericFileProducer<SmbFile> {
             String directory = file.getParent();
             boolean absolute = FileUtil.isAbsolute(file);
             if (directory != null && !operations.buildDirectory(directory, absolute)) {
-                LOGGER.warn("Cannot build directory [" + directory + "] (could be because of denied permissions)");
+                LOGGER.warn("Cannot build directory [{}] (could be because of denied permissions)", directory);
             }
         }
 
         // upload
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("About to write [" + fileName + "] to [" + getEndpoint() + "] from exchange [" + exchange + "]");
+            LOGGER.debug("About to write [{}] to [{}] from exchange [{}]", fileName, getEndpoint(), exchange);
         }
 
         boolean success = operations.storeFile(fileName, exchange, -1);
         if (!success) {
-            throw new GenericFileOperationFailedException("Error writing file [" + fileName + "]");
+            throw new GenericFileOperationFailedException(String.format("Error writing file [%s]", fileName));
         }
         if (LOGGER.isDebugEnabled()) {
-            LOGGER.debug("Wrote [" + fileName + "] to [" + getEndpoint() + "]");
+            LOGGER.debug("Wrote [{}] to [{}]", fileName, getEndpoint());
         }
     }
 
     @Override
     public SmbEndpoint getEndpoint() {
-        return (SmbEndpoint)super.getEndpoint();
+        return (SmbEndpoint) super.getEndpoint();
     }
 
 }

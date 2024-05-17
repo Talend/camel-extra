@@ -112,13 +112,15 @@ public class FromSmbMoveFilesInOrderTest extends BaseSmbTestSupport {
             expectLastCall().anyTimes();
             sourceFile.delete();
             expectLastCall().anyTimes();
+            sourceFile.close();
+            expectLastCall().atLeastOnce();
 
             expect(mockInputStream.available()).andReturn(content.length).anyTimes();
 
-            final InpotReadAnswer readAnswer = new InpotReadAnswer(content);
+            final InputReadAnswer readAnswer = new InputReadAnswer(content);
             final InputClosedAnswer closeAnswer = new InputClosedAnswer(readAnswer);
 
-            expect(mockInputStream.read((byte[])anyObject())).andAnswer(readAnswer).anyTimes();
+            expect(mockInputStream.read(anyObject())).andAnswer(readAnswer).anyTimes();
             mockInputStream.close();
             expectLastCall().andAnswer(closeAnswer).anyTimes();
 
@@ -150,23 +152,23 @@ public class FromSmbMoveFilesInOrderTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from(getSmbUrl()).to("mock:result");
             }
         };
     }
 
-    private static class InpotReadAnswer implements IAnswer<Integer> {
+    private static class InputReadAnswer implements IAnswer<Integer> {
         private final byte[] FILE_CONTENT;
         boolean hasBytes;
 
-        public InpotReadAnswer(byte[] FILE_CONTENT) {
+        public InputReadAnswer(byte[] FILE_CONTENT) {
             this.FILE_CONTENT = FILE_CONTENT;
             hasBytes = true;
         }
 
         @Override
-        public Integer answer() throws Throwable {
+        public Integer answer() {
             if (!hasBytes)
                 return -1;
             hasBytes = false;
@@ -177,24 +179,24 @@ public class FromSmbMoveFilesInOrderTest extends BaseSmbTestSupport {
     }
 
     private static class InputClosedAnswer implements IAnswer<Object> {
-        private final InpotReadAnswer readAnswer;
+        private final InputReadAnswer readAnswer;
 
-        public InputClosedAnswer(InpotReadAnswer readAnswer) {
+        public InputClosedAnswer(InputReadAnswer readAnswer) {
             this.readAnswer = readAnswer;
         }
 
         @Override
-        public Object answer() throws Throwable {
+        public Object answer() {
             readAnswer.hasBytes = true;
             return null;
         }
     }
 
-    private class ListSmbDirAnswer implements IAnswer<SmbFile[]> {
+    private static class ListSmbDirAnswer implements IAnswer<SmbFile[]> {
         List<SmbFile> sourceFilesMocks;
 
         @Override
-        public SmbFile[] answer() throws Throwable {
+        public SmbFile[] answer() {
             final SmbFile[] smbFiles = sourceFilesMocks.toArray(new SmbFile[] {});
             sourceFilesMocks.remove(smbFiles.length - 1);
             return smbFiles;

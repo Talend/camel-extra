@@ -30,7 +30,6 @@ import org.apache.camel.component.file.GenericFileProcessStrategy;
 import org.apache.camel.component.file.GenericFileProducer;
 import org.apache.camel.spi.UriEndpoint;
 import org.apache.camel.spi.UriParam;
-import org.apache.camel.spi.UriParams;
 import org.apache.camel.support.DefaultExchange;
 import org.apache.camel.support.processor.idempotent.MemoryIdempotentRepository;
 import org.apacheextras.camel.component.jcifs.strategy.SmbProcessStrategyFactory;
@@ -40,7 +39,7 @@ import org.slf4j.LoggerFactory;
 import jcifs.smb.SmbFile;
 
 @UriEndpoint(firstVersion = "2.11", scheme = "smb", title = "SMB", syntax = "smb://domain;username@host:port/path?password=secret&localWorkDirectory=/tmp",
-            consumerClass = SmbConsumer.class, category = Category.FILE)
+            category = Category.FILE)
 public class SmbEndpoint extends GenericFileEndpoint<SmbFile> {
 
     private static final Logger LOG = LoggerFactory.getLogger(SmbEndpoint.class);
@@ -74,7 +73,7 @@ public class SmbEndpoint extends GenericFileEndpoint<SmbFile> {
         }
 
         // if idempotent and no repository set then create a default one
-        if (isIdempotentSet() && isIdempotent() && idempotentRepository == null) {
+        if (Boolean.TRUE.equals(isIdempotentSet() && isIdempotent()) && idempotentRepository == null) {
             LOG.info("Using default memory based idempotent repository with cache max size: " + DEFAULT_IDEMPOTENT_CACHE_SIZE);
             idempotentRepository = MemoryIdempotentRepository.memoryIdempotentRepository(DEFAULT_IDEMPOTENT_CACHE_SIZE);
         }

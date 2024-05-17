@@ -21,10 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
@@ -44,7 +41,6 @@ public class FromSmbNotDownloadTest extends BaseSmbTestSupport {
     SmbFile rootDir;
     SmbFile sourceFile;
     SmbFileInputStream mockInputStream;
-
 
     protected String getSmbBaseUrl() {
         return "smb://localhost/" + getShare() + "/camel/" + getClass().getSimpleName() + "/";
@@ -72,6 +68,8 @@ public class FromSmbNotDownloadTest extends BaseSmbTestSupport {
         expect(sourceFile.getName()).andReturn("hello.txt").anyTimes();
         expect(sourceFile.getContentLength()).andReturn(26).anyTimes();
         expect(sourceFile.getLastModified()).andReturn(startTime).anyTimes();
+        sourceFile.close();
+        expectLastCall().atLeastOnce();
         // expect(sourceFile.getInputStream()).andReturn(mockInputStream).anyTimes();
 
 
@@ -110,13 +108,10 @@ public class FromSmbNotDownloadTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
-                from(getSmbUrl()).process(new Processor() {
-                    @Override
-                    public void process(Exchange exchange) throws Exception {
-                        assertNull("Should not download the file", exchange.getIn().getBody());
-                        assertEquals("hello.txt", exchange.getIn().getHeader(Exchange.FILE_NAME));
-                    }
+            public void configure() {
+                from(getSmbUrl()).process(exchange -> {
+                    assertNull("Should not download the file", exchange.getIn().getBody());
+                    assertEquals("hello.txt", exchange.getIn().getHeader(Exchange.FILE_NAME));
                 }).to("mock:result");
             }
         };

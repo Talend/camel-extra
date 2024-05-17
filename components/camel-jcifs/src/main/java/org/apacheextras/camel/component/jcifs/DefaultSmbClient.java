@@ -24,7 +24,6 @@ package org.apacheextras.camel.component.jcifs;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -33,11 +32,7 @@ import org.apache.camel.util.IOHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jcifs.context.SingletonContext;
-import jcifs.smb.NtlmPasswordAuthentication;
-import jcifs.smb.SmbException;
-import jcifs.smb.SmbFile;
-import jcifs.smb.SmbFileOutputStream;
+import jcifs.smb.*;
 
 /**
  *
@@ -46,7 +41,7 @@ public class DefaultSmbClient implements SmbClient {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DefaultSmbClient.class);
 
-  private NtlmPasswordAuthentication authentication;
+  private NtlmPasswordAuthenticator authentication;
   private SmbApiFactory smbApiFactory = new JcifsSmbApiFactory();
 
   /**
@@ -60,7 +55,7 @@ public class DefaultSmbClient implements SmbClient {
   }
 
   /**
-   * Creates the internal NtlmPasswordAuthentication, that is used for
+   * Creates the internal NtlmPasswordAuthenticator, that is used for
    * authentication, from the provided credentials.
    *
    * @param domain   User domain to use at login
@@ -69,40 +64,24 @@ public class DefaultSmbClient implements SmbClient {
    */
   @Override
   public void login(final String domain, final String username, final String password) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("login() domain[" + domain + "] username[" + username
-          + "] password[***]");
-    }
-    setAuthentication(new NtlmPasswordAuthentication(SingletonContext.getInstance(), domain, username,
-        password));
+    LOGGER.debug("login() domain[{}] username[{}] password[***]", domain, username);
+    setAuthentication(new NtlmPasswordAuthenticator(domain, username, password));
   }
 
-  /**
-   * @param url
-   * @param out
-   * @return
-   * @throws IOException
-   * @throws MalformedURLException
-   */
   @Override
   public boolean retrieveFile(final String url, final OutputStream out)
       throws IOException {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("retrieveFile() path[" + url + "]");
+    LOGGER.debug("retrieveFile() path[{}]", url);
+    try (SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication)) {
+        IOHelper.copyAndCloseInput(smbFile.getInputStream(), out);
     }
-    SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication);
-    IOHelper.copyAndCloseInput(smbFile.getInputStream(), out);
     return true;
   }
 
   @Override
   public boolean createDirs(final String url) {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("createDirs() path[" + url + "]");
-    }
-    SmbFile smbFile;
-    try {
-      smbFile = smbApiFactory.createSmbFile(url, authentication);
+    LOGGER.debug("createDirs() path[{}]", url);
+    try (SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication)) {
       if (!smbFile.exists()) {
         smbFile.mkdirs();
       }
@@ -118,34 +97,26 @@ public class DefaultSmbClient implements SmbClient {
 
   @Override
   public InputStream getInputStream(final String url) throws IOException {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("getInputStream() path[" + url + "]");
-    }
-    SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication);
-    return smbFile.getInputStream();
+    LOGGER.debug("getInputStream() path[{}]", url);
+    return smbApiFactory.createSmbFile(url, authentication).getInputStream();
   }
 
   @Override
   public boolean storeFile(final String url, final InputStream inputStream, final boolean append, final Long lastModified)
       throws IOException {
-    if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("storeFile() path[" + url + "]");
-    }
-    SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication);
-    SmbFileOutputStream smbout = smbApiFactory.createSmbFileOutputStream(
-        smbFile, append);
-    byte[] buf = new byte[512 * 1024];
-    int numRead;
-    while ((numRead = inputStream.read(buf)) >= 0) {
-      smbout.write(buf, 0, numRead);
-    }
-    smbout.close();
-      if (lastModified != null) {
-          smbFile.setLastModified(lastModified);
-          if (LOGGER.isTraceEnabled()) {
-              LOGGER.trace("Keeping last modified timestamp: {} on file: {}", new Object[]{lastModified, smbFile});
-          }
+    LOGGER.debug("storeFile() path[{}]", url);
+    try (SmbFile smbFile = smbApiFactory.createSmbFile(url, authentication);
+         SmbFileOutputStream out = smbApiFactory.createSmbFileOutputStream(smbFile, append)) {
+      byte[] buf = new byte[512 * 1024];
+      int numRead;
+      while ((numRead = inputStream.read(buf)) >= 0) {
+        out.write(buf, 0, numRead);
       }
+      if (lastModified != null) {
+        smbFile.setLastModified(lastModified);
+        LOGGER.trace("Keeping last modified timestamp: {} on file: {}", lastModified, smbFile);
+      }
+    }
     return true;
   }
 
@@ -176,20 +147,20 @@ public class DefaultSmbClient implements SmbClient {
 
   @Override
   public boolean isExist(final String url) throws Exception {
-    SmbFile sFile = smbApiFactory.createSmbFile(url, authentication);
-    return sFile.exists();
+    try (SmbFile sFile = smbApiFactory.createSmbFile(url, authentication)) {
+      return sFile.exists();
+    }
   }
 
   @Override
   public boolean delete(final String url) throws Exception {
-    SmbFile sFile = smbApiFactory.createSmbFile(url, authentication);
-    try {
+    try (SmbFile sFile = smbApiFactory.createSmbFile(url, authentication)) {
       // Only try to delete if the file do exists to avoid error message
-      if ( sFile.exists() ) {
+      if (sFile.exists()) {
         sFile.delete();
-      } else if (LOGGER.isDebugEnabled()) {
-      LOGGER.debug("File '{}' did not exist, skipped delete", url);
-    }
+      } else {
+        LOGGER.debug("File '{}' did not exist, skipped delete", url);
+      }
     } catch (SmbException e) {
       LOGGER.error("Could not delete '{}' due to '{}'", url, e.getMessage(), e);
       return false;
@@ -199,14 +170,13 @@ public class DefaultSmbClient implements SmbClient {
 
   @Override
   public boolean rename(final String fromUrl, final String toUrl) throws Exception {
-    final SmbFile sFile = smbApiFactory.createSmbFile(fromUrl, authentication);
-    final SmbFile renamedFile = smbApiFactory.createSmbFile(toUrl, authentication);
-
-    try {
+    try (final SmbFile sFile = smbApiFactory.createSmbFile(fromUrl, authentication);
+         final SmbFile renamedFile = smbApiFactory.createSmbFile(toUrl, authentication)) {
       if (sFile.exists()) {
         if (renamedFile.exists()) {
-          throw new IOException("Could not rename source file '" + sFile.getName() + "' since target name '"
-              + renamedFile.getName() + "' already exists.");
+          throw new IOException(
+                  String.format("Could not rename source file '%s' since target name '%s' already exists.", sFile.getName(),
+                          renamedFile.getName()));
         }
         sFile.renameTo(renamedFile);
       }
@@ -217,11 +187,11 @@ public class DefaultSmbClient implements SmbClient {
     return true;
   }
 
-  public NtlmPasswordAuthentication getAuthentication() {
+  public NtlmPasswordAuthenticator getAuthentication() {
     return authentication;
   }
 
-  public void setAuthentication(final NtlmPasswordAuthentication authentication) {
+  public void setAuthentication(final NtlmPasswordAuthenticator authentication) {
     this.authentication = authentication;
   }
 }

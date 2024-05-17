@@ -21,13 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.createStrictMock;
-import static org.easymock.EasyMock.eq;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -59,21 +53,27 @@ public class FromFileToSmbWithPortTest extends BaseSmbTestSupport {
     @Override
     @Before
     public void setUpFileSystem() throws Exception {
-        logoOne = createStrictMock(SmbFile.class);
-        logoTwo = createStrictMock(SmbFile.class);
-        rootDir = createStrictMock(SmbFile.class);
+        logoOne = createMock(SmbFile.class);
+        logoTwo = createMock(SmbFile.class);
+        rootDir = createMock(SmbFile.class);
         mockOutputStream = createMock(SmbFileOutputStream.class);
 
         expect(rootDir.exists()).andReturn(true).times(2);
+        rootDir.close();
+        expectLastCall().atLeastOnce();
         expect(logoOne.exists()).andReturn(false).times(1);
         expect(logoOne.getName()).andReturn("logo1.png");
+        logoOne.close();
+        expectLastCall().atLeastOnce();
         expect(logoTwo.exists()).andReturn(false).times(1);
         expect(logoTwo.getName()).andReturn("logo2.png");
+        logoTwo.close();
+        expectLastCall().atLeastOnce();
 
-        mockOutputStream.write((byte[])anyObject(), eq(0), eq(15358));
+        mockOutputStream.write(anyObject(), eq(0), eq(15358));
         mockOutputStream.close();
 
-        mockOutputStream.write((byte[])anyObject(), eq(0), eq(19882));
+        mockOutputStream.write(anyObject(), eq(0), eq(19882));
         mockOutputStream.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl(), rootDir);
@@ -100,7 +100,7 @@ public class FromFileToSmbWithPortTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 from("file:src/test/data?noop=true&delay=3000").to(getSmbUrl()).to("mock:result");
             }
         };

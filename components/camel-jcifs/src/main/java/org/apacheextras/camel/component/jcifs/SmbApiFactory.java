@@ -24,6 +24,7 @@ package org.apacheextras.camel.component.jcifs;
 import java.io.IOException;
 
 import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
 
@@ -32,7 +33,7 @@ import jcifs.smb.SmbFileOutputStream;
  */
 public interface SmbApiFactory {
 
-    SmbFile createSmbFile(String url, NtlmPasswordAuthentication authentication) throws IOException;
+    SmbFile createSmbFile(String url, NtlmPasswordAuthenticator authentication) throws IOException;
 
     SmbFileOutputStream createSmbFileOutputStream(SmbFile smbFile, boolean b) throws IOException;
 

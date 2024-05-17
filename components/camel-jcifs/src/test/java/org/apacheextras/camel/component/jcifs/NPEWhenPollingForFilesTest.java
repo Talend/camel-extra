@@ -21,11 +21,7 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.anyObject;
-import static org.easymock.EasyMock.createMock;
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.replay;
-import static org.easymock.EasyMock.verify;
+import static org.easymock.EasyMock.*;
 
 import java.io.File;
 
@@ -76,18 +72,17 @@ public class NPEWhenPollingForFilesTest extends BaseSmbTestSupport {
         expect(sourceFile.getContentLength()).andReturn(26).anyTimes();
         expect(sourceFile.getLastModified()).andReturn(startTime).anyTimes();
         expect(sourceFile.getInputStream()).andReturn(mockInputStream).anyTimes();
+        sourceFile.close();
+        expectLastCall().atLeastOnce();
 
         expect(mockInputStream.available()).andReturn(26);
-        expect(mockInputStream.read((byte[])anyObject())).andAnswer(new IAnswer<Integer>() {
-            @Override
-            public Integer answer() throws Throwable {
-                byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
-                byte[] msg = "Hello World from SMBServer".getBytes();
-                System.arraycopy(msg, 0, b, 0, msg.length);
-                return msg.length;
-            }
+        expect(mockInputStream.read(anyObject())).andAnswer(() -> {
+            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+            byte[] msg = "Hello World from SMBServer".getBytes();
+            System.arraycopy(msg, 0, b, 0, msg.length);
+            return msg.length;
         });
-        expect(mockInputStream.read((byte[])anyObject())).andReturn(-1);
+        expect(mockInputStream.read(anyObject())).andReturn(-1);
         mockInputStream.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl(), rootDir);
@@ -117,7 +112,7 @@ public class NPEWhenPollingForFilesTest extends BaseSmbTestSupport {
     protected RouteBuilder createRouteBuilder() throws Exception {
         return new RouteBuilder() {
             @Override
-            public void configure() throws Exception {
+            public void configure() {
                 String fileUrl = "file:target/smbtest/?fileExist=Override&noop=true";
                 from(getSmbUrl()).setHeader(Exchange.FILE_NAME, constant("deleteme.txt")).convertBodyTo(String.class).to(fileUrl).to("mock:result");
             }

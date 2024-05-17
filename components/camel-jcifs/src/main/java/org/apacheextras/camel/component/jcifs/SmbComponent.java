@@ -59,20 +59,15 @@ public class SmbComponent extends GenericFileComponent<SmbFile> {
 
     @Override
     protected SmbEndpoint buildFileEndpoint(String uri, final String remaining, final Map<String, Object> parameters) throws Exception {
-        if (log.isDebugEnabled()) {
-            log.debug("buildFileEndpoint() uri[" + uri + "] remaining[" + remaining + "] parameters[" + parameters + "]");
-        }
+        log.debug("buildFileEndpoint() uri[{}] remaining[{}] parameters[{}]", uri, remaining, parameters);
         uri = fixSpaces(uri);
         SmbConfiguration config = new SmbConfiguration(new URI(uri));
-        SmbEndpoint endpoint = new SmbEndpoint(uri, this, config);
-        return endpoint;
+        return new SmbEndpoint(uri, this, config);
     }
 
     @Override
     protected void afterPropertiesSet(final GenericFileEndpoint<SmbFile> endpoint) throws Exception {
-        if (log.isDebugEnabled()) {
-            log.debug("afterPropertiesSet()");
-        }
+        log.debug("afterPropertiesSet()");
     }
 
     private String fixSpaces(final String input) {

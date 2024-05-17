@@ -25,6 +25,7 @@ import java.io.IOException;
 
 import jcifs.context.SingletonContext;
 import jcifs.smb.NtlmPasswordAuthentication;
+import jcifs.smb.NtlmPasswordAuthenticator;
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
 
@@ -34,7 +35,7 @@ import jcifs.smb.SmbFileOutputStream;
 public class JcifsSmbApiFactory implements SmbApiFactory {
 
     @Override
-    public SmbFile createSmbFile(final String url, final NtlmPasswordAuthentication authentication) throws IOException {
+    public SmbFile createSmbFile(final String url, final NtlmPasswordAuthenticator authentication) throws IOException {
         return new SmbFile(url, SingletonContext.getInstance().withCredentials(authentication));
     }
 

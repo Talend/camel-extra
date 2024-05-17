@@ -110,6 +110,7 @@ public final class SmbProcessStrategyFactory {
         String readLock = (String) params.get("readLock");
         if (ObjectHelper.isNotEmpty(readLock)) {
             if ("none".equals(readLock) || "false".equals(readLock)) {
+                // Nothing to do
             } else if ("rename".equals(readLock)) {
                 GenericFileRenameExclusiveReadLockStrategy<SmbFile> readLockStrategy = new GenericFileRenameExclusiveReadLockStrategy<>();
                 Long timeout = (Long) params.get("readLockTimeout");
