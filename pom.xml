@@ -111,6 +111,30 @@
         </pluginRepository>
     </pluginRepositories>
 
+    <distributionManagement>
+        <snapshotRepository>
+            <id>talend_nexus_deployment</id>
+            <name>Talend Nexus Snapshots</name>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </snapshotRepository>
+        <repository>
+            <id>talend_nexus_deployment</id>
+            <name>Talend Release Repository</name>
+            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </distributionManagement>
+
     <scm>
         <connection>scm:git:https://github.com/camel-extra/camel-extra.git</connection>
         <developerConnection>scm:git:https://github.com/camel-extra/camel-extra.git</developerConnection>
