@@ -49,7 +49,7 @@
 
     <properties>
         <revision>${camel-extra.tesb.version}</revision>
-        <camel-extra.tesb.version>3.20.9.20240515</camel-extra.tesb.version>
+        <camel-extra.tesb.version>3.20.9.20240520</camel-extra.tesb.version>
         <camel-version>3.20.9</camel-version>
 
         <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
@@ -57,7 +57,7 @@
         <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
         <karaf4-version>4.4.3</karaf4-version>
         <jcifs-version>2.1.37</jcifs-version>
-        <bouncycastle-version>1.76</bouncycastle-version>
+        <bouncycastle-version>1.78.1</bouncycastle-version>
         <jdk.version>11</jdk.version>
     </properties>
 
