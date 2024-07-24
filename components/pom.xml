@@ -68,6 +68,16 @@
         <camel.osgi.require.capability />
         <camel.osgi.provide.capability />
         <camel.osgi.manifest>${project.build.outputDirectory}/META-INF/MANIFEST.MF</camel.osgi.manifest>
+
+        <maven-bundle-plugin-version>5.1.9</maven-bundle-plugin-version>
+
+        <!-- Camel Karaf OSGI version ranges -->
+        <camel-osgi-version-clean>4.7</camel-osgi-version-clean>
+        <camel-osgi-next-version-clean>4.8</camel-osgi-next-version-clean>
+        <camel-osgi-version-range>[${camel-osgi-version-clean},${camel-osgi-next-version-clean})
+        </camel-osgi-version-range>
+        <camel-osgi-import-camel-version>version="${camel-osgi-version-range}"</camel-osgi-import-camel-version>
+        <camel-osgi-camel-import>org.apache.camel.*;${camel-osgi-import-camel-version},</camel-osgi-camel-import>
     </properties>
 
     <modules>
@@ -150,71 +160,30 @@
                 </executions>
             </plugin>
             <plugin>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-bundle-plugin</artifactId>
-                <version>3.22.2</version>
-                <extensions>false</extensions>
+                <groupId>org.apache.felix</groupId>
+                <artifactId>maven-bundle-plugin</artifactId>
+                <version>${maven-bundle-plugin-version}</version>
+                <extensions>true</extensions>
+                <inherited>true</inherited>
                 <configuration>
-                    <supportIncrementalBuild>true</supportIncrementalBuild>
-                    <noWarningProjectTypes>pom</noWarningProjectTypes>
-                    <excludeDependencies>${camel.osgi.exclude.dependencies}</excludeDependencies>
                     <instructions>
-                        <Bundle-Name>${project.artifactId}</Bundle-Name>
-                        <Bundle-SymbolicName>${camel.osgi.symbolic.name}</Bundle-SymbolicName>
-                        <Bundle-Vendor>Apache Extras: Camel</Bundle-Vendor>
-                        <Bundle-Activator>${camel.osgi.activator}</Bundle-Activator>
-                        <Import-Package>${camel.osgi.import}</Import-Package>
+                        <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Export-Package>${camel.osgi.export}</Export-Package>
-                        <!-- do not include any resources as not needed-->
-                        <Include-Resource />
-                        <DynamicImport-Package>${camel.osgi.dynamic}</DynamicImport-Package>
-                        <Private-Package>${camel.osgi.private.pkg}</Private-Package>
-                        <Require-Capability>${camel.osgi.require.capability}</Require-Capability>
+                        <Import-Package>${camel-osgi-camel-import}${camel.osgi.import}</Import-Package>
+                        <Private-Package>${camel.osgi.private}</Private-Package>
+                        <DynamicImport-Package>${camel.osgi.dynamicimport.pkg}</DynamicImport-Package>
+                        <Embed-Dependency>${camel.osgi.embed.dependency}</Embed-Dependency>
+                        <Bundle-Activator>${camel.osgi.activator}</Bundle-Activator>
+                        <Fragment-Host>${camel.osgi.fragment.host}</Fragment-Host>
                         <Provide-Capability>${camel.osgi.provide.capability}</Provide-Capability>
-                        <Implementation-Title>Apache Camel</Implementation-Title>
-                        <Implementation-Version>${project.version}</Implementation-Version>
-                        <Karaf-Info>Camel;${project.artifactId}=${project.version}</Karaf-Info>
-                        <_versionpolicy>${camel.osgi.import.default.version}</_versionpolicy>
+                        <Require-Capability>${camel.osgi.require.capability}</Require-Capability>
+                        <Export-Service>${camel.osgi.export.service}</Export-Service>
                         <_failok>${camel.osgi.failok}</_failok>
-                        <_removeheaders>Bnd-LastModified</_removeheaders>
-                        <_plugin>
-                            org.apache.felix.bundleplugin.BlueprintPlugin,
-                            aQute.lib.spring.SpringXMLType,
-                            org.apache.felix.bundleplugin.JpaPlugin,
-                            org.apache.camel.maven.bundle.CamelPlugin
-                        </_plugin>
+                        <_versionpolicy>[$(version;==;$(@)),$(version;+;$(@)))</_versionpolicy>
+                        <_removeheaders>Ignore-Package,Include-Resource,Private-Package,Embed-Dependency
+                        </_removeheaders>
                     </instructions>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>versions</id>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>cleanVersions</goal>
-                        </goals>
-                        <configuration>
-                            <versions>
-                                <camel.osgi.version.clean>${project.version}</camel.osgi.version.clean>
-                            </versions>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>bundle-manifest</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>manifest</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-jar-plugin</artifactId>
-                <version>${maven-jar-plugin-version}</version>
-                <configuration>
-                    <archive>
-                        <manifestFile>${camel.osgi.manifest}</manifestFile>
-                    </archive>
+                    <unpackBundle>true</unpackBundle>
                 </configuration>
             </plugin>
         </plugins>

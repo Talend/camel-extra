@@ -23,7 +23,7 @@
         <relativePath>..</relativePath>
     </parent>
     <artifactId>camel-wmq</artifactId>
-    <packaging>jar</packaging>
+    <packaging>bundle</packaging>
     <name>Camel Extra :: IBM Websphere MQ</name>
     <description>Camel IBM Websphere MQ component</description>
 
@@ -53,9 +53,13 @@
       <url>https://github.com/camel-extra/camel-extra</url>
     </scm>
     <properties>
-        <camel.osgi.import.before.defaults>
-            com.ibm*;resolution:=optional
-        </camel.osgi.import.before.defaults>
+        <camel.osgi.export>
+            org.apache.camel*;version=${camel-version}
+        </camel.osgi.export>
+        <camel.osgi.import>
+            com.ibm*;version="[9,10)",
+            *
+        </camel.osgi.import>
     </properties>
     <dependencies>
 
