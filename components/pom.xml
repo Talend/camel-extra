@@ -152,7 +152,7 @@
             <plugin>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-bundle-plugin</artifactId>
-                <version>${camel-version}</version>
+                <version>3.22.2</version>
                 <extensions>false</extensions>
                 <configuration>
                     <supportIncrementalBuild>true</supportIncrementalBuild>
