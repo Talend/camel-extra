@@ -49,8 +49,8 @@
 
     <properties>
         <revision>${camel-extra.tesb.version}</revision>
-        <camel-extra.tesb.version>4.7.0</camel-extra.tesb.version>
-        <camel-version>4.7.0</camel-version>
+        <camel-extra.tesb.version>4.8.1</camel-extra.tesb.version>
+        <camel-version>4.8.1</camel-version>
 
         <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
         <maven-bundle-version>5.1.9</maven-bundle-version>

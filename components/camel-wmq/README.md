@@ -24,7 +24,7 @@ karaf@root()> bundle:install -s wrap:mvn:com.ibm.mq/com.ibm.mq.allclient/9.4.0.0
 then you can install camel-wmq (assuming camel is already installed):
 
 ```
-karaf@root()> bundle:install -s mvn:org.apache-extras.camel-extra/camel-wmq/4.7.0
+karaf@root()> bundle:install -s mvn:org.apache-extras.camel-extra/camel-wmq/4.8.1
 ```
 
 ## Usage

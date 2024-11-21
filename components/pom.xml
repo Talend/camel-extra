@@ -72,8 +72,8 @@
         <maven-bundle-plugin-version>5.1.9</maven-bundle-plugin-version>
 
         <!-- Camel Karaf OSGI version ranges -->
-        <camel-osgi-version-clean>4.7</camel-osgi-version-clean>
-        <camel-osgi-next-version-clean>4.8</camel-osgi-next-version-clean>
+        <camel-osgi-version-clean>4.8</camel-osgi-version-clean>
+        <camel-osgi-next-version-clean>4.9</camel-osgi-next-version-clean>
         <camel-osgi-version-range>[${camel-osgi-version-clean},${camel-osgi-next-version-clean})
         </camel-osgi-version-range>
         <camel-osgi-import-camel-version>version="${camel-osgi-version-range}"</camel-osgi-import-camel-version>

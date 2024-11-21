@@ -11,7 +11,7 @@
     "supportLevel": "Stable",
     "groupId": "org.apache-extras.camel-extra",
     "artifactId": "camel-wmq",
-    "version": "4.7.0",
+    "version": "4.8.1",
     "scheme": "wmq",
     "extendsScheme": "",
     "syntax": "wmq:destinationName",
