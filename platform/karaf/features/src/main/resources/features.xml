@@ -36,7 +36,7 @@
     </feature>
     <feature name='camel-wmq' version='${project.version}'>
         <feature prerequisite="true">wrap</feature>
-        <feature version='${camel-version}'>camel-core</feature>
+        <feature version='[4.8,4.9)'>camel-core</feature>
         <feature>bouncycastle</feature>
         <bundle dependency='true'>mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle-version}</bundle>
         <bundle>wrap:mvn:com.ibm.mq/com.ibm.mq.allclient/${com-ibm-mq-version}$Export-Package=com.ibm*;version=${com-ibm-mq-version}&amp;Import-Package=org.*;resolution:=optional,javax.*;resolution:=optional,oracle.*;resolution:=optional,io.*;resolution:=optional&amp;Bundle-Version=${com-ibm-mq-version}</bundle>
