@@ -54,7 +54,7 @@
     </scm>
     <properties>
         <camel.osgi.export>
-            org.apache.camel*;version=${camel-version}
+            org.apacheextras.camel*;version=${camel-version}
         </camel.osgi.export>
         <camel.osgi.import>
             com.ibm*;version="[9,10)",
@@ -67,7 +67,7 @@
         <dependency>
             <groupId>com.ibm.mq</groupId>
             <artifactId>com.ibm.mq.allclient</artifactId>
-            <version>9.4.0.0</version>
+            <version>${com-ibm-mq-version}</version>
         </dependency>
 
         <!-- camel -->

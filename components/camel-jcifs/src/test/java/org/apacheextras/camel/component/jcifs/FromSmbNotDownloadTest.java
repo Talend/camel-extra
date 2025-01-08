@@ -21,14 +21,19 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
@@ -53,7 +58,7 @@ public class FromSmbNotDownloadTest extends BaseSmbTestSupport {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUpFileSystem() throws Exception {
         sourceFile = createMock(SmbFile.class);
         rootDir = createMock(SmbFile.class);
@@ -110,7 +115,7 @@ public class FromSmbNotDownloadTest extends BaseSmbTestSupport {
             @Override
             public void configure() {
                 from(getSmbUrl()).process(exchange -> {
-                    assertNull("Should not download the file", exchange.getIn().getBody());
+                    assertNull( exchange.getIn().getBody(), "Should not download the file");
                     assertEquals("hello.txt", exchange.getIn().getHeader(Exchange.FILE_NAME));
                 }).to("mock:result");
             }

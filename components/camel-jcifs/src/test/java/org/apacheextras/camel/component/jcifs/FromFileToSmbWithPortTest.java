@@ -21,12 +21,19 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.eq;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
 
+import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
@@ -35,6 +42,9 @@ import jcifs.smb.SmbFileOutputStream;
  * Unit test to verify that the explicitly set port is used
  */
 public class FromFileToSmbWithPortTest extends BaseSmbTestSupport {
+
+    @EndpointInject("mock:result")
+    protected MockEndpoint mockResultEndpoint;
 
     SmbFile rootDir;
     SmbFile logoOne;
@@ -51,7 +61,6 @@ public class FromFileToSmbWithPortTest extends BaseSmbTestSupport {
     }
 
     @Override
-    @Before
     public void setUpFileSystem() throws Exception {
         logoOne = createMock(SmbFile.class);
         logoTwo = createMock(SmbFile.class);
@@ -87,11 +96,8 @@ public class FromFileToSmbWithPortTest extends BaseSmbTestSupport {
     @Test
     public void testFromFileToSmb() throws Exception {
         replay(rootDir, logoOne, logoTwo, mockOutputStream);
-
-        MockEndpoint mock = getMockEndpoint("mock:result");
-        mock.expectedMessageCount(2);
-
-        assertMockEndpointsSatisfied();
+        mockResultEndpoint.expectedMessageCount(2);
+        mockResultEndpoint.assertIsSatisfied();
 
         verify(rootDir, logoOne, logoTwo, mockOutputStream);
     }

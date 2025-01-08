@@ -100,7 +100,7 @@
                     <descriptors>
                         <descriptor>file:${project.build.directory}/classes/${features.file}</descriptor>
                         <descriptor>mvn:org.apache.karaf.features/standard/${karaf4-version}/xml/features</descriptor>
-                        <descriptor>mvn:org.apache.camel.karaf/apache-camel/${camel-version}/xml/features</descriptor>
+                        <descriptor>mvn:org.apache.camel.karaf/apache-camel/${camel-features.tesb.version}/xml/features</descriptor>
                     </descriptors>
                     <distribution>org.apache.karaf.features:framework</distribution>
                     <javase>${jdk.version}</javase>

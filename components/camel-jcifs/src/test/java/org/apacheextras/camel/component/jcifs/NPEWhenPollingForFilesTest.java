@@ -21,7 +21,13 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
-import static org.easymock.EasyMock.*;
+import static org.easymock.EasyMock.anyObject;
+import static org.easymock.EasyMock.createMock;
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.verify;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
 
@@ -29,9 +35,8 @@ import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.easymock.EasyMock;
-import org.easymock.IAnswer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
@@ -56,7 +61,7 @@ public class NPEWhenPollingForFilesTest extends BaseSmbTestSupport {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUpFileSystem() throws Exception {
         sourceFile = createMock(SmbFile.class);
         rootDir = createMock(SmbFile.class);
@@ -103,8 +108,8 @@ public class NPEWhenPollingForFilesTest extends BaseSmbTestSupport {
 
         // assert the file
         File file = new File("target/smbtest/deleteme.txt");
-        assertTrue("The ASCII file should exists", file.exists());
-        assertTrue("File size wrong", file.length() > 10);
+        assertTrue( file.exists(),"The ASCII file should exists");
+        assertTrue(file.length() > 10,"File size wrong");
         file.delete();
     }
 

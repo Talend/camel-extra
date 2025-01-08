@@ -22,9 +22,10 @@
 package org.apacheextras.camel.component.jcifs;
 
 import org.apache.camel.CamelContext;
-import org.apache.camel.test.junit4.CamelTestSupport;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.test.junit5.CamelTestSupport;
 import org.apacheextras.camel.component.jcifs.test.StubFileSmbApiFactory;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 
 public abstract class BaseSmbTestSupport extends CamelTestSupport {
 
@@ -32,20 +33,22 @@ public abstract class BaseSmbTestSupport extends CamelTestSupport {
 
     protected abstract void setUpFileSystem() throws Exception;
 
-    @Override
-    @Before
-    public void setUp() throws Exception {
-        smbApiFactory = new StubFileSmbApiFactory();
+    @BeforeEach
+    public void setUpTest() throws Exception {
         setUpFileSystem();
-        super.setUp();
     }
 
     @Override
     protected CamelContext createCamelContext() throws Exception {
         CamelContext aContext = super.createCamelContext();
         SmbComponent component = aContext.getComponent("smb", SmbComponent.class);
+        smbApiFactory = new StubFileSmbApiFactory();
         component.setSmbApiFactoryClass(smbApiFactory);
         return aContext;
+    }
+
+    protected void assertMockEndpointsSatisfied() throws InterruptedException {
+        MockEndpoint.assertIsSatisfied(context);
     }
 
     public String getUsername() {
