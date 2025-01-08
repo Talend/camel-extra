@@ -25,8 +25,8 @@ import static org.easymock.EasyMock.*;
 
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileOutputStream;
@@ -53,7 +53,7 @@ public class AnonymousFromFileToSmbTest extends BaseSmbTestSupport {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUpFileSystem() throws Exception {
         logoOne = createMock(SmbFile.class);
         logoTwo = createMock(SmbFile.class);

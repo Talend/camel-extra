@@ -22,20 +22,24 @@
 -->
 <features name='camel-extra-${project.version}'>
 
-    <feature name='camel-jcifs' version='${project.version}' resolver='(obr)' start-level='50'>
+    <feature name='camel-jcifs' version='${project.version}' start-level='50'>
         <feature prerequisite="true">wrap</feature>
-        <feature version='${camel-version}'>camel</feature>
+        <feature version='[4.8,4.9)'>camel-core</feature>
+        <feature>bouncycastle</feature>
         <bundle dependency="true">wrap:mvn:org.codelibs/jcifs/${jcifs-version}$Import-Package=org.bouncycastle*;version:="[${bouncycastle-version},2)",*;resolution:=optional&amp;Bundle-Version=${jcifs-version}</bundle>
         <!--
         jcifs depends on a bouncycastle version that is more recent than the version
         that is included in the karaf distribution, so we need to enforce the installation
         to avoid classloading issues.
          -->
-        <bundle>mvn:org.bouncycastle/bcprov-jdk18on/${bouncycastle-version}</bundle>
-        <bundle>mvn:org.apache-extras.camel-extra/camel-jcifs/${project.version}</bundle>
+        <bundle>mvn:org.apache-extras.camel-extra/camel-jcifs/${camel-extra.tesb.version}</bundle>
     </feature>
-    <feature name='camel-wmq' version='${project.version}' resolver='(obr)'>
-        <feature version='${camel-version}'>camel</feature>
-        <bundle>mvn:org.apache-extras.camel-extra/camel-wmq/${project.version}</bundle>
+    <feature name='camel-wmq' version='${project.version}'>
+        <feature prerequisite="true">wrap</feature>
+        <feature version='[4.8,4.9)'>camel-core</feature>
+        <feature>bouncycastle</feature>
+        <bundle dependency='true'>mvn:org.bouncycastle/bcutil-jdk18on/${bouncycastle-version}</bundle>
+        <bundle>wrap:mvn:com.ibm.mq/com.ibm.mq.allclient/${com-ibm-mq-version}$Export-Package=com.ibm*;version=${com-ibm-mq-version}&amp;Import-Package=org.*;resolution:=optional,javax.*;resolution:=optional,oracle.*;resolution:=optional,io.*;resolution:=optional&amp;Bundle-Version=${com-ibm-mq-version}</bundle>
+        <bundle>mvn:org.apache-extras.camel-extra/camel-wmq/${camel-extra.tesb.version}</bundle>
     </feature>
 </features>

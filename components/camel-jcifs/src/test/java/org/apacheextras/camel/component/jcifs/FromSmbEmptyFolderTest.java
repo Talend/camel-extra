@@ -29,7 +29,7 @@ import java.util.List;
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbException;
 import jcifs.smb.SmbFile;

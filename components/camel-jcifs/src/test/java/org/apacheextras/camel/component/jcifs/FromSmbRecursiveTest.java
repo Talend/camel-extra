@@ -28,8 +28,8 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import jcifs.smb.SmbFile;
 import jcifs.smb.SmbFileInputStream;
@@ -61,7 +61,7 @@ public class FromSmbRecursiveTest extends BaseSmbTestSupport {
     }
 
     @Override
-    @Before
+    @BeforeEach
     public void setUpFileSystem() throws Exception {
         rootDir = createMock(SmbFile.class);
         sub1Dir = createMock(SmbFile.class);

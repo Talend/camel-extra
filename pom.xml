@@ -51,14 +51,16 @@
         <revision>${camel-extra.tesb.version}</revision>
         <camel-extra.tesb.version>4.8.1</camel-extra.tesb.version>
         <camel-version>4.8.1</camel-version>
+        <camel-features.tesb.version>4.8.1.20240820</camel-features.tesb.version>
 
         <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
         <maven-bundle-version>5.1.9</maven-bundle-version>
         <maven-jar-plugin-version>3.2.2</maven-jar-plugin-version>
-        <karaf4-version>4.4.3</karaf4-version>
-        <jcifs-version>2.1.37</jcifs-version>
+        <karaf4-version>4.4.6</karaf4-version>
+        <jcifs-version>2.1.39</jcifs-version>
         <bouncycastle-version>1.78.1</bouncycastle-version>
-        <jdk.version>11</jdk.version>
+        <com-ibm-mq-version>9.4.0.0</com-ibm-mq-version>
+        <jdk.version>17</jdk.version>
     </properties>
 
     <url>https://camel-extra.github.io</url>
