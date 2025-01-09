@@ -20,7 +20,7 @@
         <groupId>org.apache-extras.camel-extra</groupId>
         <artifactId>components</artifactId>
         <version>${revision}</version>
-        <relativePath>..</relativePath>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>camel-wmq</artifactId>
     <packaging>bundle</packaging>

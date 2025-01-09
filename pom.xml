@@ -272,7 +272,42 @@
                         </excludes>
                     </configuration>
                 </plugin>
+                <plugin>
+                    <groupId>io.paradoxical</groupId>
+                    <artifactId>resolved-pom-maven-plugin</artifactId>
+                    <version>1.0</version>
+                    <configuration>
+                        <properties>
+                            <revision>${revision}</revision>
+                            <camel-extra.tesb.version>${camel-extra.tesb.version}</camel-extra.tesb.version>
+                            <camel-version>${camel-version}</camel-version>
+                            <camel-features.tesb.version>${camel-features.tesb.version}</camel-features.tesb.version>
+                            <karaf4-version>${karaf4-version}</karaf4-version>
+                            <jcifs-version>${jcifs-version}</jcifs-version>
+                            <bouncycastle-version>${bouncycastle-version}</bouncycastle-version>
+                            <com-ibm-mq-version>${com-ibm-mq-version}</com-ibm-mq-version>
+                        </properties>
+                    </configuration>
+                    <executions>
+                        <execution>
+                            <id>resolve-my-pom</id>
+                            <phase>initialize</phase>
+                            <goals>
+                                <goal>resolve-pom</goal>
+                            </goals>
+                            <configuration>
+                                <resolvedPomFile>.resolved-pom.xml</resolvedPomFile>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
             </plugins>
         </pluginManagement>
+        <plugins>
+            <plugin>
+                <groupId>io.paradoxical</groupId>
+                <artifactId>resolved-pom-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
     </build>
 </project>
