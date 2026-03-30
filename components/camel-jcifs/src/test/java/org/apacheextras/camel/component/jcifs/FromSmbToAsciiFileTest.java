@@ -30,6 +30,7 @@ import static org.easymock.EasyMock.verify;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.File;
+import java.io.OutputStream;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.builder.RouteBuilder;
@@ -79,14 +80,12 @@ public class FromSmbToAsciiFileTest extends BaseSmbTestSupport {
         sourceFile.close();
         expectLastCall().atLeastOnce();
 
-        expect(mockInputStream.available()).andReturn(26);
-        expect(mockInputStream.read(anyObject())).andAnswer(() -> {
-            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+        expect(mockInputStream.transferTo(anyObject())).andAnswer(() -> {
+            OutputStream out = (OutputStream) EasyMock.getCurrentArguments()[0];
             byte[] msg = "Hello World from SMBServer".getBytes();
-            System.arraycopy(msg, 0, b, 0, msg.length);
-            return msg.length;
+            out.write(msg);
+            return (long) msg.length;
         });
-        expect(mockInputStream.read(anyObject())).andReturn(-1);
         mockInputStream.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl(), rootDir);

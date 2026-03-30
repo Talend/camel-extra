@@ -23,6 +23,8 @@ package org.apacheextras.camel.component.jcifs;
 
 import static org.easymock.EasyMock.*;
 
+import java.io.OutputStream;
+
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -85,13 +87,11 @@ public void setUpFileSystem() throws Exception {
     sourceFile.close();
     expectLastCall().atLeastOnce();
 
-    expect(mockInputStream.available()).andReturn(FILE_CONTENT.length);
-    expect(mockInputStream.read(anyObject())).andAnswer(() -> {
-      byte[] b = (byte[]) EasyMock.getCurrentArguments()[0];
-      System.arraycopy(FILE_CONTENT, 0, b, 0, FILE_CONTENT.length);
-      return FILE_CONTENT.length;
+    expect(mockInputStream.transferTo(anyObject())).andAnswer(() -> {
+        OutputStream out = (OutputStream) EasyMock.getCurrentArguments()[0];
+        out.write(FILE_CONTENT);
+        return (long) FILE_CONTENT.length;
     });
-    expect(mockInputStream.read(anyObject())).andReturn(-1);
     mockInputStream.close();
 
     smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/", rootDir);

@@ -21,8 +21,10 @@
  ***************************************************************************************/
 package org.apacheextras.camel.component.jcifs;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -294,6 +296,16 @@ public class SmbOperations<SmbFile> implements GenericFileOperations<SmbFile> {
             return true;
         } catch (Exception e) {
             throw new GenericFileOperationFailedException(String.format("Cannot store file %s", storeName), e);
+        }
+    }
+
+    @Override
+    public boolean storeFileDirectly(final String name, final String content) {
+        try (InputStream is = new ByteArrayInputStream(content.getBytes())) {
+            login();
+            return client.storeFile(getPath(name), is, false, null);
+        } catch (Exception e) {
+            throw new GenericFileOperationFailedException(String.format("Cannot store file %s", name), e);
         }
     }
 

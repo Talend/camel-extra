@@ -23,6 +23,8 @@ package org.apacheextras.camel.component.jcifs;
 
 import static org.easymock.EasyMock.*;
 
+import java.io.OutputStream;
+
 import org.apache.camel.EndpointInject;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
@@ -106,24 +108,20 @@ public class FromSmbRecursiveTest extends BaseSmbTestSupport {
         source2File.close();
         expectLastCall().atLeastOnce();
 
-        expect(mockInputStream1.available()).andReturn(26);
-        expect(mockInputStream1.read(anyObject())).andAnswer(() -> {
-            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+        expect(mockInputStream1.transferTo(anyObject())).andAnswer(() -> {
+            OutputStream out = (OutputStream) EasyMock.getCurrentArguments()[0];
             byte[] msg = "Hello World from SMBServer sub1".getBytes();
-            System.arraycopy(msg, 0, b, 0, msg.length);
-            return msg.length;
+            out.write(msg);
+            return (long) msg.length;
         });
-        expect(mockInputStream1.read(anyObject())).andReturn(-1);
         mockInputStream1.close();
 
-        expect(mockInputStream2.available()).andReturn(26);
-        expect(mockInputStream2.read(anyObject())).andAnswer(() -> {
-            byte[] b = (byte[])EasyMock.getCurrentArguments()[0];
+        expect(mockInputStream2.transferTo(anyObject())).andAnswer(() -> {
+            OutputStream out = (OutputStream) EasyMock.getCurrentArguments()[0];
             byte[] msg = "Hello World from SMBServer sub2".getBytes();
-            System.arraycopy(msg, 0, b, 0, msg.length);
-            return msg.length;
+            out.write(msg);
+            return (long) msg.length;
         });
-        expect(mockInputStream2.read(anyObject())).andReturn(-1);
         mockInputStream2.close();
 
         smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/", rootDir);

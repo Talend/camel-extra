@@ -43,11 +43,15 @@ public class SmbEndpointConfigurer extends PropertyConfigurerSupport implements 
         case "backoffMultiplier": target.setBackoffMultiplier(property(camelContext, int.class, value)); return true;
         case "bridgeerrorhandler":
         case "bridgeErrorHandler": target.setBridgeErrorHandler(property(camelContext, boolean.class, value)); return true;
+        case "browselimit":
+        case "browseLimit": target.setBrowseLimit(property(camelContext, int.class, value)); return true;
         case "buffersize":
         case "bufferSize": target.setBufferSize(property(camelContext, int.class, value)); return true;
         case "charset": target.setCharset(property(camelContext, java.lang.String.class, value)); return true;
         case "checksumfilealgorithm":
         case "checksumFileAlgorithm": target.setChecksumFileAlgorithm(property(camelContext, java.lang.String.class, value)); return true;
+        case "checksumwritefile":
+        case "checksumWriteFile": target.setChecksumWriteFile(property(camelContext, boolean.class, value)); return true;
         case "delay": target.setDelay(property(camelContext, long.class, value)); return true;
         case "delete": target.setDelete(property(camelContext, boolean.class, value)); return true;
         case "donefilename":
@@ -205,11 +209,15 @@ public class SmbEndpointConfigurer extends PropertyConfigurerSupport implements 
         case "backoffMultiplier": return int.class;
         case "bridgeerrorhandler":
         case "bridgeErrorHandler": return boolean.class;
+        case "browselimit":
+        case "browseLimit": return int.class;
         case "buffersize":
         case "bufferSize": return int.class;
         case "charset": return java.lang.String.class;
         case "checksumfilealgorithm":
         case "checksumFileAlgorithm": return java.lang.String.class;
+        case "checksumwritefile":
+        case "checksumWriteFile": return boolean.class;
         case "delay": return long.class;
         case "delete": return boolean.class;
         case "donefilename":
@@ -368,11 +376,15 @@ public class SmbEndpointConfigurer extends PropertyConfigurerSupport implements 
         case "backoffMultiplier": return target.getBackoffMultiplier();
         case "bridgeerrorhandler":
         case "bridgeErrorHandler": return target.isBridgeErrorHandler();
+        case "browselimit":
+        case "browseLimit": return target.getBrowseLimit();
         case "buffersize":
         case "bufferSize": return target.getBufferSize();
         case "charset": return target.getCharset();
         case "checksumfilealgorithm":
         case "checksumFileAlgorithm": return target.getChecksumFileAlgorithm();
+        case "checksumwritefile":
+        case "checksumWriteFile": return target.isChecksumWriteFile();
         case "delay": return target.getDelay();
         case "delete": return target.isDelete();
         case "donefilename":

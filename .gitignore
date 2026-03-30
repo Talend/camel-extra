@@ -41,9 +41,17 @@ atlassian-ide-plugin.xml
 .project
 .settings
 
+
+
+##
+# Ignore VSCode project files
+# #
+.vscode
+
 ##
 # Ignore build files
 # #
 **/target/*
 **/.gitignore
 .gitignore
+.resolved-pom.xml

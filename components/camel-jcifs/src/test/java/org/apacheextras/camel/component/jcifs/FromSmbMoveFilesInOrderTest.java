@@ -29,6 +29,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.EasyMock.replay;
 import static org.easymock.EasyMock.verify;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -115,14 +116,13 @@ public class FromSmbMoveFilesInOrderTest extends BaseSmbTestSupport {
             sourceFile.close();
             expectLastCall().atLeastOnce();
 
-            expect(mockInputStream.available()).andReturn(content.length).anyTimes();
 
-            final InputReadAnswer readAnswer = new InputReadAnswer(content);
-            final InputClosedAnswer closeAnswer = new InputClosedAnswer(readAnswer);
-
-            expect(mockInputStream.read(anyObject())).andAnswer(readAnswer).anyTimes();
+            expect(mockInputStream.transferTo(anyObject())).andAnswer(() -> {
+                OutputStream out = (OutputStream) EasyMock.getCurrentArguments()[0];
+                out.write(content);
+                return (long) content.length;
+            });
             mockInputStream.close();
-            expectLastCall().andAnswer(closeAnswer).anyTimes();
 
             smbApiFactory.putSmbFiles(getSmbBaseUrl() + "/hello" + i + ".txt", sourceFile);
         }

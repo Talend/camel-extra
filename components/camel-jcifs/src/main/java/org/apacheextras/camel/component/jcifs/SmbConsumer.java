@@ -23,6 +23,7 @@ package org.apacheextras.camel.component.jcifs;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
@@ -52,7 +53,7 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
     }
 
     @Override
-    protected boolean pollDirectory(final String fileName, final List<GenericFile<SmbFile>> fileList, int depth) {
+    protected boolean pollDirectory(final Exchange exchange, final String fileName, final List<GenericFile<SmbFile>> fileList, int depth) {
 
         if (LOGGER.isTraceEnabled()) {
             LOGGER.trace("pollDirectory() running. My delay is [{}] and my strategy is [{}]", this.getDelay(), this.getPollStrategy().getClass());
@@ -75,16 +76,17 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
                 if (currentFileIsDir) {
                     if (endpoint.isRecursive()) {
                         currentRelativePath = smbFile.getName().split("/")[0] + "/";
-                        int nextDepth = depth++;
-                        pollDirectory(fileName + "/" + smbFile.getName(), fileList, nextDepth);
+                        int nextDepth = depth + 1;
+                        pollDirectory(exchange, fileName + "/" + smbFile.getName(), fileList, nextDepth);
                     } else {
                         currentRelativePath = "";
                     }
                 } else {
                     try {
                         GenericFile<SmbFile> genericFile = asGenericFile(fileName, smbFile);
-                        if (isValidFile(genericFile, false, smbFiles)) {
-                            fileList.add(asGenericFile(fileName, smbFile));
+                        if (isValidFile(exchange, () -> genericFile, smbFile.getName(), genericFile.getAbsoluteFilePath(),
+                                () -> genericFile.getRelativeFilePath(), false, smbFiles)) {
+                            fileList.add(genericFile);
                         }
                     } catch (IOException e) {
                         throw RuntimeCamelException.wrapRuntimeCamelException(e);
@@ -124,7 +126,7 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
 
 
     @Override
-    protected boolean isMatched(final GenericFile<SmbFile> file, final String doneFileName, final SmbFile[] files) {
+    protected boolean isMatched(final Supplier<GenericFile<SmbFile>> file, final String doneFileName, final SmbFile[] files) {
         String onlyName = FileUtil.stripPath(doneFileName);
 
         for (SmbFile f : files) {
@@ -138,8 +140,14 @@ public class SmbConsumer extends GenericFileConsumer<SmbFile> {
     }
 
     @Override
-    protected boolean isRetrieveFile() {
+    public boolean isRetrieveFile() {
         return ((SmbEndpoint)getEndpoint()).isDownload();
+    }
+
+    @Override
+    protected Supplier<String> getRelativeFilePath(final String path, final String relativePath, final String fileName, final SmbFile file) {
+        final String answer = relativePath != null ? relativePath : currentRelativePath + fileName;
+        return () -> answer;
     }
 
     @Override
