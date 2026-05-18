@@ -49,9 +49,9 @@
 
     <properties>
         <revision>${camel-extra.tesb.version}</revision>
-        <camel-extra.tesb.version>4.8.1</camel-extra.tesb.version>
+        <camel-extra.tesb.version>4.8.1.20260512</camel-extra.tesb.version>
         <camel-version>4.8.1</camel-version>
-        <camel-features.tesb.version>4.8.1.20250901</camel-features.tesb.version>
+        <camel-features.tesb.version>4.8.1.20260512</camel-features.tesb.version>
 
         <site-repo-url>scpexe://people.apache.org/www/activemq.apache.org/camel/maven/</site-repo-url>
         <maven-bundle-version>5.1.9</maven-bundle-version>
@@ -59,7 +59,7 @@
         <karaf4-version>4.4.6</karaf4-version>
         <karaf4-features.tesb.version>4.4.6.20250901</karaf4-features.tesb.version>
         <jcifs-version>2.1.39</jcifs-version>
-        <bouncycastle-version>1.81</bouncycastle-version>
+        <bouncycastle-version>1.84</bouncycastle-version>
         <com-ibm-mq-version>9.4.0.0</com-ibm-mq-version>
         <jdk.version>17</jdk.version>
     </properties>
@@ -111,6 +111,28 @@
             <releases>
                 <enabled>false</enabled>
             </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <id>talend-public</id>
+            <name>Talend Open Source Public group</name>
+            <url>https://artifacts-oss.talend.com/nexus/content/groups/public</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </pluginRepository>
+        <pluginRepository>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>thirdparty-releases</id>
+            <name>Third party releases</name>
+            <url>https://artifacts-zl.talend.com/nexus/content/repositories/thirdparty-releases</url>
         </pluginRepository>
     </pluginRepositories>
 
