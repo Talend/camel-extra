@@ -91,6 +91,17 @@
 	</dependencyManagement>
     <repositories>
         <repository>
+            <id>global-artifacts</id>
+            <name>Talend global-artifacts (GitHub Packages)</name>
+            <url>https://maven.pkg.github.com/Talend/global-artifacts</url>
+            <snapshots>
+                <enabled>true</enabled>
+            </snapshots>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+        <repository>
             <id>apache.content.snapshots</id>
             <name>Apache Development Snapshot Repository</name>
             <url>https://repository.apache.org/content/repositories/snapshots/</url>
@@ -113,33 +124,23 @@
             </releases>
         </pluginRepository>
         <pluginRepository>
-            <id>talend-public</id>
-            <name>Talend Open Source Public group</name>
-            <url>https://artifacts-oss.talend.com/nexus/content/groups/public</url>
+            <id>global-artifacts</id>
+            <name>Talend global-artifacts (GitHub Packages)</name>
+            <url>https://maven.pkg.github.com/Talend/global-artifacts</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
             <releases>
                 <enabled>true</enabled>
             </releases>
-        </pluginRepository>
-        <pluginRepository>
-            <releases>
-                <enabled>true</enabled>
-            </releases>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-            <id>thirdparty-releases</id>
-            <name>Third party releases</name>
-            <url>https://artifacts-zl.talend.com/nexus/content/repositories/thirdparty-releases</url>
         </pluginRepository>
     </pluginRepositories>
 
     <distributionManagement>
         <snapshotRepository>
-            <id>talend_nexus_deployment</id>
-            <name>Talend Nexus Snapshots</name>
+            <id>global-artifacts</id>
+            <name>Talend global-artifacts (GitHub Packages)</name>
+            <url>https://maven.pkg.github.com/Talend/global-artifacts</url>
             <snapshots>
                 <enabled>true</enabled>
             </snapshots>
@@ -148,9 +149,9 @@
             </releases>
         </snapshotRepository>
         <repository>
-            <id>talend_nexus_deployment</id>
-            <name>Talend Release Repository</name>
-            <url>https://artifacts-oss.talend.com/nexus/content/repositories/TalendOpenSourceRelease/</url>
+            <id>global-artifacts</id>
+            <name>Talend global-artifacts (GitHub Packages)</name>
+            <url>https://maven.pkg.github.com/Talend/global-artifacts</url>
             <snapshots>
                 <enabled>false</enabled>
             </snapshots>
