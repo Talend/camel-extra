@@ -47,3 +47,6 @@ atlassian-ide-plugin.xml
 **/target/*
 **/.gitignore
 .gitignore
+.resolved-pom.xml
+**/.resolved-pom.xml
+**/generated/*
