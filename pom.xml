@@ -101,28 +101,9 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
-        <repository>
-            <id>apache.content.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>https://repository.apache.org/content/repositories/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-        </repository>
     </repositories>
 
     <pluginRepositories>
-        <pluginRepository>
-            <id>apache.snapshots</id>
-            <name>Apache Development Snapshot Repository</name>
-            <url>http://repository.apache.org/snapshots/</url>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </pluginRepository>
         <pluginRepository>
             <id>global-artifacts</id>
             <name>Talend global-artifacts (GitHub Packages)</name>
